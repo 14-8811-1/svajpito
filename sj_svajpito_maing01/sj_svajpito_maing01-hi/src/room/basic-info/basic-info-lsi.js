@@ -7,7 +7,7 @@ const Lsi = {
     en: "Name",
   },
   state: {
-    en: "Code",
+    en: "State",
   },
   capacity: {
     en: "Capacity",

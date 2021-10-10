@@ -19,29 +19,36 @@ class GameRoom {
     }
   }
 
+  getPlayer(uuIdentity) {
+    return this._players.find((p) => p.getUuIdentity() === uuIdentity);
+  }
+
   removePlayer(uuIdentity) {
-    this._players.filter((p) => uuIdentity !== p.getUuIdentity());
+    console.log("remove", uuIdentity, this._id);
+    let player = this.getPlayer(uuIdentity);
+    this._players = this._players.filter((p) => uuIdentity !== p.getUuIdentity());
+    this._sendPlayerList(player, this._id);
   }
 
   getPlayerInfoList() {
     return this._players.map((p) => p.getPlayerInfo());
   }
 
-  _sendPlayerList(player) {
+  _sendPlayerList(skipPlayer, gameId) {
     this._informPlayers(
       this._players.map((p) => p.getPlayerInfo()),
-      player
+      gameId,
+      skipPlayer
     );
   }
 
-  _informPlayers(data, player) {
+  _informPlayers(data, gameId, skipPlayer) {
     let players = this._players;
-    if (player) {
-      players = this._players.filter((p) => p.getUuIdentity() !== player.getUuIdentity());
+    if (skipPlayer instanceof Player) {
+      players = this._players.filter((p) => p.getUuIdentity() !== skipPlayer.getUuIdentity());
     }
-    console.log(players);
     players.forEach((player) => {
-      player.inform("playerList", data);
+      player.inform("playerList", gameId, data);
     });
   }
 }

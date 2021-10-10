@@ -7,23 +7,27 @@ const Room = require("../../conponents/room");
 const ValidationHelper = require("../../helpers/validation-helper");
 
 const GameRoom = require("../../conponents/game-room");
+const gameStorage = require("../../conponents/game-storage");
 
 class JoinAbl {
   constructor() {
-    this.gameRooms = [];
+    // this.gameRooms = [];
   }
 
   async join(uri, dtoIn, response, session, uuAppErrorMap = {}) {
     // async join(response, uuAppErrorMap = {}) {
+    let awid = uri.getAwid();
     let roomId = dtoIn.roomId;
-    let gameRoom = this.gameRooms.find((gr) => gr.getId() === roomId);
+    let gameRoom = gameStorage.getGame({ awid, gameId: roomId }); //this.gameRooms.find((gr) => gr.getId() === roomId);
     if (!gameRoom) {
       gameRoom = new GameRoom(roomId);
-      this.gameRooms.push(gameRoom);
+      gameStorage.addGame({ awid, gameRoom });
+      // this.gameRooms.push(gameRoom);
     }
 
     let uuIdentity = session.getIdentity().getUuIdentity();
     let name = session.getIdentity().getName();
+    gameStorage.removePlayer(awid, uuIdentity);
     gameRoom.addPlayer({
       name,
       uuIdentity,

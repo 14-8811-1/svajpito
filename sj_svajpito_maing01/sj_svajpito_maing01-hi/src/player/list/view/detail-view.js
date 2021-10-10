@@ -51,7 +51,7 @@ const DetailView = createVisualComponent({
       {
         cell: (cellProps) => {
           if (cellProps?.data?.state) {
-            return <span> {cellProps.data.data.state} </span>;
+            return <span> {cellProps.data.state} </span>;
           } else {
             return null;
           }
@@ -62,8 +62,8 @@ const DetailView = createVisualComponent({
       },
       {
         cell: (cellProps) => {
-          if (cellProps?.data?.score) {
-            return <span> {cellProps.data.data.score} </span>;
+          if (cellProps?.data?.score != undefined) {
+            return <span> {cellProps.data.score} </span>;
           } else {
             return null;
           }

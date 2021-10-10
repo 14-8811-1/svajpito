@@ -43,6 +43,7 @@ const BasicInfo = createVisualComponent({
     editButtons: UU5.PropTypes.bool,
     expand: UU5.PropTypes.bool,
     expandButton: UU5.PropTypes.bool,
+    eventSource: UU5.PropTypes.any,
   },
   //@@viewOff:propTypes
 
@@ -57,6 +58,7 @@ const BasicInfo = createVisualComponent({
     editButtons: true,
     expand: false,
     expandButton: true,
+    eventSource: undefined,
   },
   //@@viewOff:defaultProps
 
@@ -67,8 +69,9 @@ const BasicInfo = createVisualComponent({
     //controlling opening modals through state and props
     const [showStartModal, setShowStartModal] = useState(false);
 
-    let actionList = useMemo(() => getDefaultActionList(roomDataObject.state, handleOpenStartForm), [
+    let actionList = useMemo(() => getDefaultActionList(roomDataObject.state, handleOpenStartForm, props.eventSource), [
       roomDataObject.state,
+      props.eventSource,
     ]);
     //@@viewOff:hooks
 
@@ -158,13 +161,22 @@ const BasicInfo = createVisualComponent({
 });
 
 //viewOn:helpers
-function getDefaultActionList(dataObjectState, handleOpenStartForm) {
+function getDefaultActionList(dataObjectState, handleOpenStartForm, eventSource) {
   let actionList = [];
-  if (dataObjectState === "ready") {
+  if (dataObjectState === "ready" && eventSource?.current?.close) {
     actionList.push({
       content: "Start",
       active: true,
       onClick: handleOpenStartForm,
+    });
+    actionList.push({
+      content: "Leave",
+      active: true,
+      onClick: () => {
+        eventSource.current.close();
+        UU5.Environment.setRoute("rooms");
+      },
+      colorSchema: "danger",
     });
   }
   return actionList;

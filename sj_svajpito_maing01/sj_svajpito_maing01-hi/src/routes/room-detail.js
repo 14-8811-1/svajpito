@@ -30,6 +30,7 @@ export const RoomDetail = createVisualComponent({
   render(props) {
     const [waiting, setWaiting] = useState(false);
     const [playerList, setPlayerList] = useState([]);
+    let eventSourceRef = useRef();
 
     useEffect(() => {
       poll();
@@ -42,6 +43,8 @@ export const RoomDetail = createVisualComponent({
       const eventSource = new EventSource(
         `${Calls.getCommandUri("room/join")}?roomId=${props.params.id}&access_token=${session.token}`
       );
+      eventSourceRef.current = eventSource;
+
       eventSource.onmessage = (event) => {
         const eventData = JSON.parse(event.data);
         console.log(eventData);
@@ -60,6 +63,8 @@ export const RoomDetail = createVisualComponent({
     //@@viewOff:private
     //@@viewOn:interface
     //@@viewOff:interface
+    debugger;
+    console.log(eventSourceRef.current);
 
     //@@viewOn:render
     const attrs = UU5.Common.VisualComponent.getAttrs(props);
@@ -67,7 +72,7 @@ export const RoomDetail = createVisualComponent({
       <div {...attrs}>
         <RoomContextResolver id={props.params.id}>
           <PlayersProvider playerList={playerList}>
-            <BasicInfo />
+            <BasicInfo eventSource={eventSourceRef} />
             <List />
           </PlayersProvider>
         </RoomContextResolver>
