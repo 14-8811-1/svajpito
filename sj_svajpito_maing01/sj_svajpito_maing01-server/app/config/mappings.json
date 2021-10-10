@@ -15,6 +15,47 @@
         "realization": "index.html",
         "httpMethod": "GET",
         "type": "UVE"
+      },
+      "instance/load": {
+        "realization": "api/controllers/SvajpitoMainController.load",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "sse/listen": {
+        "realization": "api/controllers/SseController.listen",
+        "httpMethod": "GET",
+        "type": "CMD",
+        "produces": "text/event-stream"
+      },
+      "sse/send": {
+        "realization": "api/controllers/SseController.send",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "room/create": {
+        "realization": "api/controllers/RoomController.create",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "room/list": {
+        "realization": "api/controllers/RoomController.list",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "room/get": {
+        "realization": "api/controllers/RoomController.get",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "room/join": {
+        "realization": "api/controllers/RoomController.join",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "room/start": {
+        "realization": "api/controllers/RoomController.start",
+        "httpMethod": "POST",
+        "type": "CMD"
       }
     }
   }

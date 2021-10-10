@@ -6,6 +6,7 @@ const { Profile, AppClientTokenService, UuAppWorkspace, UuAppWorkspaceError } = 
 const { UriBuilder } = require("uu_appg01_server").Uri;
 const { LoggerFactory } = require("uu_appg01_server").Logging;
 const { AppClient } = require("uu_appg01_server");
+const { Config } = require("uu_appg01_server").Utils;
 const Errors = require("../api/errors/svajpito-main-error.js");
 
 const WARNINGS = {
@@ -19,6 +20,7 @@ const logger = LoggerFactory.get("SvajpitoMainAbl");
 class SvajpitoMainAbl {
   constructor() {
     this.validator = Validator.load();
+    this.dao = DaoFactory.getDao("svajpitoMain");
   }
 
   async init(uri, dtoIn, session) {
@@ -45,50 +47,6 @@ class SvajpitoMainAbl {
     });
     await Promise.all(schemaCreateResults);
 
-    if (dtoIn.uuBtLocationUri) {
-      const baseUri = uri.getBaseUri();
-      const uuBtUriBuilder = UriBuilder.parse(dtoIn.uuBtLocationUri);
-      const location = uuBtUriBuilder.getParameters().id;
-      const uuBtBaseUri = uuBtUriBuilder.toUri().getBaseUri();
-
-      const createAwscDtoIn = {
-        name: "SjSvajpito",
-        typeCode: "sj-svajpito-maing01",
-        location: location,
-        uuAppWorkspaceUri: baseUri,
-      };
-
-      const awscCreateUri = uuBtUriBuilder.setUseCase("uuAwsc/create").toUri();
-      const appClientToken = await AppClientTokenService.createToken(uri, uuBtBaseUri);
-      const callOpts = AppClientTokenService.setToken({ session }, appClientToken);
-
-      // TODO HDS
-      let awscId;
-      try {
-        const awscDtoOut = await AppClient.post(awscCreateUri, createAwscDtoIn, callOpts);
-        awscId = awscDtoOut.id;
-      } catch (e) {
-        if (e.code.includes("applicationIsAlreadyConnected") && e.paramMap.id) {
-          logger.warn(`Awsc already exists id=${e.paramMap.id}.`, e);
-          awscId = e.paramMap.id;
-        } else {
-          throw new Errors.Init.CreateAwscFailed({ uuAppErrorMap }, { location: dtoIn.uuBtLocationUri }, e);
-        }
-      }
-
-      const artifactUri = uuBtUriBuilder.setUseCase(null).clearParameters().setParameter("id", awscId).toUri();
-
-      await UuAppWorkspace.connectArtifact(
-        baseUri,
-        {
-          artifactUri: artifactUri.toString(),
-          synchronizeArtifactBasicAttributes: false,
-        },
-        session
-      );
-    }
-
-    // HDS 3
     if (dtoIn.uuAppProfileAuthorities) {
       try {
         await Profile.set(awid, "Authorities", dtoIn.uuAppProfileAuthorities);
@@ -101,8 +59,20 @@ class SvajpitoMainAbl {
       }
     }
 
-    // HDS 4 - HDS N
-    // TODO Implement according to application needs...
+    let uuObject = {
+      awid,
+      state: "active",
+    };
+
+    let instance;
+    try {
+      instance = await this.dao.create(uuObject);
+    } catch (e) {
+      // if (e instanceof ObjectStoreError) {
+      //   throw new Errors.CertificationDaoCreateFailed({ uuAppErrorMap }, e);
+      // }
+      // throw e;
+    }
 
     // HDS N+1
     const workspace = UuAppWorkspace.get(awid);
@@ -110,6 +80,18 @@ class SvajpitoMainAbl {
     return {
       ...workspace,
       uuAppErrorMap: uuAppErrorMap,
+    };
+  }
+
+  async load(uri, dtoIn, session, authorizationResult, uuAppErrorMap = {}) {
+    const awid = uri.getAwid();
+    let authorizedProfileList = authorizationResult.getAuthorizedProfileList();
+    const asidBaseUri = UriBuilder.parse(uri.toString()).setAwid(Config.get("asid")).setUseCase(null).toString();
+
+    return {
+      uuAppErrorMap,
+      authorizedProfileList,
+      asidBaseUri,
     };
   }
 }

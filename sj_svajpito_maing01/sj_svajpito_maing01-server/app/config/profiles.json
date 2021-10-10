@@ -8,7 +8,7 @@
     "profileList": ["Authorities", "Executives", "AwidLicenseOwner", "Public"],
     "useCaseMap": {
       "sys/uuAppWorkspace/init": {
-        "sysStateList": ["created"],
+        "sysStateList": ["created", "active"],
         "profileList": ["AwidLicenseOwner"]
       },
       "defaultUve": {
@@ -17,6 +17,38 @@
       "sys/uuAppWorkspace/initUve": {
         "sysStateList": ["created"],
         "profileList": ["Public", "AwidLicenseOwner"]
+      },
+      "sse/listen": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "sse/send": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "instance/load": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "room/create": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "room/list": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "room/get": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "room/join": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "room/start": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
       }
     }
   }

@@ -6,6 +6,10 @@
       "schemaMap": {
         "svajpitoMain": {
           "realization": "dao/SvajpitoMainMongo"
+        },
+        "room": {
+          "realization": "dao/RoomMongo",
+          "maxNoI": 10000
         }
       }
     }

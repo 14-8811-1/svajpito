@@ -1,18 +1,17 @@
 "use strict";
 const { UuObjectDao } = require("uu_appg01_server").ObjectStore;
 
-class SvajpitoMainMongo extends UuObjectDao {
-  async createSchema() {
-    await super.createIndex({ awid: 1 }, { unique: true });
-  }
+class RoomMongo extends UuObjectDao {
+  async createSchema() {}
 
   async create(uuObject) {
     return await super.insertOne(uuObject);
   }
 
-  async getByAwid(awid) {
+  async get(awid, id) {
     let filter = {
-      awid,
+      awid: awid,
+      id: id,
     };
     return await super.findOne(filter);
   }
@@ -32,6 +31,21 @@ class SvajpitoMainMongo extends UuObjectDao {
     };
     return await super.deleteOne(filter);
   }
+
+  async listByState(awid, state, sortBy, order, pageInfo) {
+    let sort = {
+      [sortBy]: order === "asc" ? 1 : -1,
+    };
+    return super.find({ awid, state }, pageInfo, sort);
+  }
+
+  async list(awid, sortBy, order, pageInfo) {
+    let sort = {
+      [sortBy]: order === "asc" ? 1 : -1,
+    };
+    return super.find({ awid }, pageInfo, sort);
+  }
+
 }
 
-module.exports = SvajpitoMainMongo;
+module.exports = RoomMongo;

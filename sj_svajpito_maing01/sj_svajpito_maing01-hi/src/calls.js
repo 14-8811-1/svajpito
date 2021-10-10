@@ -13,6 +13,13 @@ let Calls = {
     return response.data;
   },
 
+
+  instanceLoad(dtoIn) {
+    let commandUri = Calls.getCommandUri("instance/load", dtoIn.uri);
+    return Calls.call("get", commandUri, dtoIn.data);
+  },
+
+
   loadDemoContent(dtoIn) {
     let commandUri = Calls.getCommandUri("loadDemoContent");
     return Calls.call("get", commandUri, dtoIn);
@@ -31,6 +38,18 @@ let Calls = {
   getWorkspace() {
     let commandUri = Calls.getCommandUri("sys/uuAppWorkspace/get");
     return Calls.call("get", commandUri, {});
+  },
+  sendSse(dtoInData) {
+    let commandUri = Calls.getCommandUri("sse/send");
+    return Calls.call("post", commandUri, dtoInData);
+  },
+  roomCreate(dtoIn) {
+    let commandUri = Calls.getCommandUri("room/create", dtoIn.uri);
+    return Calls.call("post", commandUri, dtoIn.data);
+  },
+  roomList(dtoIn) {
+    let commandUri = Calls.getCommandUri("room/list", dtoIn.uri);
+    return Calls.call("get", commandUri, dtoIn.data);
   },
 
   async initAndGetWorkspace(dtoInData) {
