@@ -19,7 +19,6 @@ let Calls = {
     return Calls.call("get", commandUri, dtoIn.data);
   },
 
-
   loadDemoContent(dtoIn) {
     let commandUri = Calls.getCommandUri("loadDemoContent");
     return Calls.call("get", commandUri, dtoIn);
@@ -50,6 +49,14 @@ let Calls = {
   roomList(dtoIn) {
     let commandUri = Calls.getCommandUri("room/list", dtoIn.uri);
     return Calls.call("get", commandUri, dtoIn.data);
+  },
+  roomLoad(dtoIn) {
+    let commandUri = Calls.getCommandUri("room/get", dtoIn.uri);
+    return Calls.call("get", commandUri, dtoIn.data);
+  },
+
+  joinRoom() {
+
   },
 
   async initAndGetWorkspace(dtoInData) {

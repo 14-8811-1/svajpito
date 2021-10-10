@@ -6,7 +6,6 @@
 
 //@@viewOn:imports
 import UU5 from "uu5g04";
-import Plus4U5 from "uu_plus4u5g01";
 import "uu5g04-bricks";
 import { createVisualComponent } from "uu5g04-hooks";
 import Uu5Tiles from "uu5tilesg02";
@@ -39,8 +38,8 @@ const DetailView = createVisualComponent({
     const columns = [
       {
         cell: (cellProps) => {
-          if (cellProps.data.data.name) {
-            return <span> {cellProps.data.data.name} </span>;
+          if (cellProps?.data?.name) {
+            return <span> {cellProps.data.name} </span>;
           } else {
             return null;
           }
@@ -51,46 +50,26 @@ const DetailView = createVisualComponent({
       },
       {
         cell: (cellProps) => {
-          if (cellProps.data.data.capacity) {
-            return <span> {cellProps.data.data.capacity} </span>;
-          } else {
-            return null;
-          }
-        },
-        header: <UU5.Bricks.Lsi lsi={Lsi.columns.capacity} />,
-        sorterKey: "capacity",
-        minWidth: "s",
-      },
-      {
-        cell: (cellProps) => {
-          if (cellProps.data.data.state) {
+          if (cellProps?.data?.state) {
             return <span> {cellProps.data.data.state} </span>;
           } else {
             return null;
           }
         },
         header: <UU5.Bricks.Lsi lsi={Lsi.columns.state} />,
-        sorterKey: "state",
+        sorterKey: "name",
         minWidth: "s",
       },
       {
         cell: (cellProps) => {
-          if (cellProps.data.data.id) {
-            return (
-              <UU5.Bricks.Link
-                onClick={(c) => {
-                  UU5.Environment.setRoute("roomdetail", { id: cellProps.data.data.id });
-                }}
-              >
-                Join
-              </UU5.Bricks.Link>
-            );
+          if (cellProps?.data?.score) {
+            return <span> {cellProps.data.data.score} </span>;
           } else {
             return null;
           }
         },
-        header: <UU5.Bricks.Lsi lsi={Lsi.columns.joinGame} />,
-        sorterKey: "joinGame",
+        header: <UU5.Bricks.Lsi lsi={Lsi.columns.score} />,
+        sorterKey: "capacity",
         minWidth: "s",
       },
     ];
@@ -117,29 +96,6 @@ const DetailView = createVisualComponent({
 });
 
 //viewOn:helpers
-function getStateIcon(state) {
-  let result = Config.PROTOCOL_STATE_LIST.find((x) => x.code === state)?.icon || null;
-  return result;
-}
-
-function handleClick(e, baseUri, isHome, useCase, params) {
-  if (isHome) {
-    UU5.Environment.setRoute(useCase, params);
-    e.preventDefault();
-  } else {
-    window.open(getLink(baseUri, useCase, params));
-    e.preventDefault();
-  }
-}
-function getLink(baseUri, useCase, params) {
-  let link = Uri.UriBuilder.parse(baseUri).setUseCase(useCase).setParameters(params).toString();
-  return link;
-}
-function addProtocolIdToUri(uri, protocolData) {
-  uri.parameters = { id: protocolData.id };
-
-  return uri.toString();
-}
 //viewOff:helpers
 
 //viewOn:exports

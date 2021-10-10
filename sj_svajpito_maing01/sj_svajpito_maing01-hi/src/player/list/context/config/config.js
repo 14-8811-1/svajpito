@@ -1,18 +1,10 @@
-//@@viewOn:revision
-//@@viewOff:revision
-
 import UU5 from "uu5g04";
-import Config from "../../config/config.js";
+import Config from "../../../config/config";
 
-const TAG = Config.TAG + "Room.";
+const TAG = Config.TAG + "Context.";
 
 export default {
   ...Config,
-
-  BLA: "",
-  ROOM_PROFILE_LIST: {
-    RoomCreate: ["Authorities", "Executives", "StandardUsers"],
-  },
 
   TAG,
   Css: UU5.Common.Css.createCssModule(

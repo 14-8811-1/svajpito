@@ -4,7 +4,7 @@
 import UU5 from "uu5g04";
 import Config from "../../config/config.js";
 
-const TAG = Config.TAG + "Room.";
+const TAG = Config.TAG + "Player.";
 
 export default {
   ...Config,

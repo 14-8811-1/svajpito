@@ -54,24 +54,24 @@ export const Home = createVisualComponent({
 
     async function poll() {
       setWaiting(true);
-        const session = UU5.Environment.getSession().getCallToken();
-        const eventSource = new EventSource(`${Calls.getCommandUri("sse/listen")}?access_token=${session.token}`);
-        eventSource.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          setLastValue(oldValue => [...oldValue, data.message]);
-        };
-        eventSource.onopen = (event) => {
-          console.log("Open", event);
-        };
-        eventSource.onerror = (event) => {
-          console.log("Error", event);
-        };
+      const session = UU5.Environment.getSession().getCallToken();
+      const eventSource = new EventSource(`${Calls.getCommandUri("sse/listen")}?access_token=${session.token}`);
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        setLastValue((oldValue) => [...oldValue, data.message]);
+      };
+      eventSource.onopen = (event) => {
+        console.log("Open", event);
+      };
+      eventSource.onerror = (event) => {
+        console.log("Error", event);
+      };
     }
 
     async function send() {
       const newMessage = messageInput.current.getValue();
       setMessage(newMessage);
-      await Calls.sendSse({ message: newMessage })
+      await Calls.sendSse({ message: newMessage });
     }
     //@@viewOff:private
 
@@ -83,10 +83,18 @@ export const Home = createVisualComponent({
     return (
       <div {...attrs}>
         <WelcomeRow icon="mdi-access-point">
-          <UU5.Forms.Text label="Message" name="message" ref_={messageInput} value={message}/>
-          {waiting ? null : <UU5.Bricks.Button colorSchema="blue" onClick={poll}>Wait for data</UU5.Bricks.Button>}
-          <UU5.Bricks.Button colorSchema="green" onClick={send}>Send data</UU5.Bricks.Button>
-          {lastValue.map((item, index) => <UU5.Bricks.Div key={index}>{item}</UU5.Bricks.Div>)}
+          <UU5.Forms.Text label="Message" name="message" ref_={messageInput} value={message} />
+          {waiting ? null : (
+            <UU5.Bricks.Button colorSchema="blue" onClick={poll}>
+              Wait for data
+            </UU5.Bricks.Button>
+          )}
+          <UU5.Bricks.Button colorSchema="green" onClick={send}>
+            Send data
+          </UU5.Bricks.Button>
+          {lastValue.map((item, index) => (
+            <UU5.Bricks.Div key={index}>{item}</UU5.Bricks.Div>
+          ))}
         </WelcomeRow>
       </div>
     );

@@ -49,8 +49,9 @@
       },
       "room/join": {
         "realization": "api/controllers/RoomController.join",
-        "httpMethod": "POST",
-        "type": "CMD"
+        "httpMethod": "GET",
+        "type": "CMD",
+        "produces": "text/event-stream"
       },
       "room/start": {
         "realization": "api/controllers/RoomController.start",

@@ -12,7 +12,8 @@ class RoomController {
     return GetAbl.get(ucEnv.getUri(), ucEnv.getDtoIn());
   }
   join(ucEnv) {
-    return JoinAbl.join(ucEnv.getUri(), ucEnv.getDtoIn(), ucEnv.getSession());
+    return JoinAbl.join(ucEnv.getUri(), ucEnv.getDtoIn(), ucEnv.getResponse(), ucEnv.getSession());
+    // return JoinAbl.join(ucEnv.getResponse());
   }
   start(ucEnv) {
     return StartAbl.start(ucEnv.getUri(), ucEnv.getDtoIn(), ucEnv.getSession());

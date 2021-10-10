@@ -11,14 +11,11 @@ import { useSubApp, useSubAppData } from "uu_plus4u5g01-context";
 import UuP from "uu_pg01";
 import "uu_pg01-bricks";
 import "uu_territoryg01-bricks";
-import ListAddRoomForm from "./list-add-room-form";
 
 import ListView from "./list-view";
-import { useRooms } from "./context/use-rooms";
-import DataListStateResolver from "../../common/data-list-state-resolver";
+import { usePlayers } from "./context/use-players";
+// import DataListStateResolver from "../../common/data-list-state-resolver";
 import DataObjectStateResolver from "../../common/data-object-state-resolver";
-
-import { useRoomPermission } from "../context/use-room-permission";
 
 import Config from "../config/config";
 import Lsi from "./list-lsi";
@@ -62,57 +59,20 @@ const List = createVisualComponent({
 
   render(props) {
     //@@viewOn:hooks
-    let roomDataList = useRooms();
+    let players = usePlayers();
     let { data: subAppData } = useSubAppData();
     let subApp = useSubApp();
-    const roomPermission = useRoomPermission();
 
+    let playerDataList = players?.playerList;
+    console.log(playerDataList);
     //controlling opening modals through state and props
-    const [showListAddRoomModal, setShowListAddRoomModal] = useState(false);
 
     //@@viewOff:hooks
 
     //@@viewOn:private
-    let roomList = roomDataList.data;
-    console.log(roomDataList);
-    let actionList = getActionList(props.editButtons, roomPermission, handleOpenShowListAddRoomForm);
-
     //@@viewOff:private
 
     //@@viewOff:handlers
-    function handleOpenShowListAddRoomForm() {
-      setShowListAddRoomModal(true);
-    }
-
-    function handleCloseShowListAddRoomFormDone() {
-      setShowListAddRoomModal(false);
-    }
-
-    function handleCloseShowListAddRoomForm({ component }) {
-      clearForm(component);
-      setShowListAddRoomModal(false);
-    }
-    function handleListAddProtocolSaveFail({ component, dtoOut: e }) {
-      console.error(e);
-      component.getAlertBus().setAlert({
-        content: <UU5.Common.Error content={<UU5.Bricks.Lsi lsi={Lsi.saveError} />} />,
-        colorSchema: "danger",
-      });
-    }
-    async function handleListAddProtocolSave({ values, component }) {
-      const newData = {
-        capacity: values.capacity,
-        name: values.name,
-      };
-      try {
-        await roomDataList.handlerMap.create(newData);
-      } catch (e) {
-        component.saveFail(e);
-        return;
-      }
-      component.saveDone();
-    }
-
     //@@viewOff:handlers
 
     //@@viewOn:interface
@@ -128,25 +88,14 @@ const List = createVisualComponent({
         elevation={props.elevation}
         borderRadius={props.borderRadius}
         cardView={props.cardView}
-        actionList={actionList}
         header={<UU5.Bricks.Lsi lsi={Lsi.listHeader} />}
         help={<UU5.Bricks.Lsi lsi={Lsi.listHelp} />}
         hideCopyComponent
       >
         <DataObjectStateResolver dataObject={subAppData} height={PLACEHOLDER_HEIGHT}>
-          <DataListStateResolver dataList={roomDataList} height={PLACEHOLDER_HEIGHT}>
-            <>
-              <ListAddRoomForm
-                baseUri={subApp.baseUri}
-                shown={showListAddRoomModal}
-                onSave={handleListAddProtocolSave}
-                onSaveDone={handleCloseShowListAddRoomFormDone}
-                onSaveFail={handleListAddProtocolSaveFail}
-                onCancel={handleCloseShowListAddRoomForm}
-              />
-              <ListView roomList={roomList} baseUri={subApp.baseUri} />
-            </>
-          </DataListStateResolver>
+          <>
+            <ListView playerList={playerDataList} baseUri={subApp.baseUri} />
+          </>
         </DataObjectStateResolver>
       </UuP.Bricks.ComponentWrapper>
     );
@@ -155,24 +104,6 @@ const List = createVisualComponent({
 });
 
 //viewOn:helpers
-function getActionList(editButtons, roomPermission, handleOpenListAddRoomForm) {
-  let actionList = [];
-  // if (editButtons && roomPermission.room.canCreate()) {
-  actionList.push({
-    content: <UU5.Bricks.Lsi lsi={Lsi.addRoom} />,
-    active: true,
-    onClick: handleOpenListAddRoomForm,
-  });
-  // }
-
-  return actionList;
-}
-
-function clearForm(form) {
-  if (form.reset) form.reset();
-  if (form.getAlertBus) form.getAlertBus().clearAlerts();
-}
-
 //viewOff:helpers
 
 //viewOn:exports

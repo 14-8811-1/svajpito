@@ -11,11 +11,11 @@ import List from "../room/list/list";
 
 const STATICS = {
   //@@viewOn:statics
-  displayName: Config.TAG + "Home",
+  displayName: Config.TAG + "Rooms",
   //@@viewOff:statics
 };
 
-export const Home = createVisualComponent({
+export const Rooms = createVisualComponent({
   ...STATICS,
 
   //@@viewOn:propTypes
@@ -43,4 +43,4 @@ export const Home = createVisualComponent({
   },
 });
 
-export default Home;
+export default Rooms;

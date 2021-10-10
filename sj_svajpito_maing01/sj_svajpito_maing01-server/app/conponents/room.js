@@ -7,6 +7,12 @@ const DEFAULTS = {
   order: "asc",
 };
 
+const STATES = {
+  CREATED: "created",
+  ACTIVE: "active",
+  CLOSED: "closed",
+};
+
 const SCHEMA = "room";
 /**
  * Class representing Room uuObject
@@ -31,6 +37,9 @@ class Room extends UuObject {
    */
   async create(roomData, uuAppErrorMap = {}) {
     let roomProduct;
+
+    roomData.state = STATES.CREATED;
+
     try {
       roomProduct = await this.dao.create(roomData);
     } catch (e) {

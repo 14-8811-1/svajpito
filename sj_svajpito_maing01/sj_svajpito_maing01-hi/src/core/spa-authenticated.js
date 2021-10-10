@@ -10,6 +10,7 @@ import Left from "./left";
 import Bottom from "./bottom";
 import Home from "../routes/home";
 import SpaContext from "./spa-context.js";
+// import RoomDetail from "../routes/room-detail";
 //@@viewOff:imports
 
 const STATICS = {
@@ -20,6 +21,7 @@ const STATICS = {
 
 const About = UU5.Common.Component.lazy(() => import("../routes/about"));
 const Rooms = UU5.Common.Component.lazy(() => import("../routes/rooms"));
+const RoomDetail = UU5.Common.Component.lazy(() => import("../routes/room-detail"));
 const InitAppWorkspace = UU5.Common.Component.lazy(() => import("../routes/init-app-workspace"));
 const ControlPanel = UU5.Common.Component.lazy(() => import("../routes/control-panel"));
 
@@ -29,6 +31,7 @@ const ROUTES = {
   home: { component: <Home /> },
   about: { component: <About /> },
   rooms: { component: <Rooms /> },
+  roomdetail: { component: <RoomDetail /> },
   "sys/uuAppWorkspace/initUve": { component: <InitAppWorkspace /> },
   controlPanel: { component: <ControlPanel /> },
 };
