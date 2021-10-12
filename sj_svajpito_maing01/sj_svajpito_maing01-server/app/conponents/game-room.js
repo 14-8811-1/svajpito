@@ -24,7 +24,7 @@ class GameRoom {
   }
 
   removePlayer(uuIdentity) {
-    console.log("remove", uuIdentity, this._id);
+    // console.log("remove", uuIdentity, this._id);
     let player = this.getPlayer(uuIdentity);
     this._players = this._players.filter((p) => uuIdentity !== p.getUuIdentity());
     this._sendPlayerList(player, this._id);
@@ -32,6 +32,19 @@ class GameRoom {
 
   getPlayerInfoList() {
     return this._players.map((p) => p.getPlayerInfo());
+  }
+
+  updatePlayerListScore(playerList, uuIdentity) {
+    // console.log(playerList);
+    this._players.forEach((player) => {
+      let playerInList = playerList.find((p) => p.uuIdentity === player.getUuIdentity());
+      if (playerInList) {
+        player.setScore(playerInList.score);
+      }
+    });
+
+    let skipPlayer = this.getPlayer(uuIdentity);
+    this._sendPlayerList(skipPlayer, this._id);
   }
 
   _sendPlayerList(skipPlayer, gameId) {

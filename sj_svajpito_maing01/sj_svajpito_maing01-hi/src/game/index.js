@@ -58,7 +58,9 @@ export const Game = UU5.Common.Component.memo(
       //@@viewOn:render
       const attrs = UU5.Common.VisualComponent.getAttrs(props);
       return (
-        <div {...attrs} id="phaser-game" />
+        <div {...attrs} >
+          <div id="phaser-game" />
+        </div>
       );
       //@@viewOff:render
     },

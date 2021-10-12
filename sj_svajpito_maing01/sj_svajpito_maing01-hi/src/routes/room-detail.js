@@ -36,6 +36,7 @@ export const RoomDetail = createVisualComponent({
   render(props) {
     const [waiting, setWaiting] = useState(false);
     const [playerList, setPlayerList] = useState([]);
+    const [playerScore, setPlayerScore] = useState(0);
     let eventSourceRef = useRef();
 
     useEffect(() => {
@@ -66,6 +67,36 @@ export const RoomDetail = createVisualComponent({
         console.log("Error", event);
       };
     }
+
+    async function updateScore(newScore) {
+      if (playerList.length > 0) {
+        let oldScore = playerScore;
+        setPlayerScore(newScore);
+        if (newScore !== 0) {
+          setPlayerList((playerList) => {
+            let players = playerList;
+            let player = playerList.find(
+              (p) => p.uuIdentity === UU5.Environment.getSession().getIdentity().getUuIdentity()
+            );
+            if (!player) {
+              return;
+            }
+            player.score += 10;
+
+            return players;
+          });
+
+          const newMessage = {
+            gameId: props.params.id,
+            identifier: "playerList",
+            data: playerList,
+          };
+
+          console.log(newMessage);
+          await Calls.updatePlayerList(newMessage);
+        }
+      }
+    }
     //@@viewOff:private
     //@@viewOn:interface
     //@@viewOff:interface
@@ -79,17 +110,17 @@ export const RoomDetail = createVisualComponent({
             <BasicInfo eventSource={eventSourceRef} />
             <List />
           </PlayersProvider>
+          <Provider store={store}>
+            <div>
+              <div id="game-container">
+                <Game />
+              </div>
+              <div className="content">
+                <Leaderboard updateScore={updateScore} />
+              </div>
+            </div>
+          </Provider>
         </RoomContextResolver>
-        <Provider store={store}>
-          <div>
-            <div>
-              <Leaderboard />
-            </div>
-            <div>
-              <Game />
-            </div>
-          </div>
-        </Provider>
       </div>
     );
     //@@viewOff:render

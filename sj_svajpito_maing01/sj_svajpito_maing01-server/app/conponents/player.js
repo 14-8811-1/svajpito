@@ -2,7 +2,7 @@ const STATES = {
   READY: "ready",
   ACTIVE: "active",
   FINAL: "final",
-}
+};
 
 class Player {
   constructor({ name, uuIdentity, client }) {
@@ -20,6 +20,14 @@ class Player {
       state: this._state,
       score: this._score,
     };
+  }
+
+  increaseScore(points) {
+    this._score += points;
+  }
+
+  setScore(score) {
+    this._score = score;
   }
 
   getUuIdentity() {

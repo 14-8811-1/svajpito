@@ -42,6 +42,10 @@ let Calls = {
     let commandUri = Calls.getCommandUri("sse/send");
     return Calls.call("post", commandUri, dtoInData);
   },
+  updatePlayerList(dtoInData) {
+    let commandUri = Calls.getCommandUri("game/update");
+    return Calls.call("post", commandUri, dtoInData);
+  },
   roomCreate(dtoIn) {
     let commandUri = Calls.getCommandUri("room/create", dtoIn.uri);
     return Calls.call("post", commandUri, dtoIn.data);

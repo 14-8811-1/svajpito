@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import * as UU5 from "uu5g04";
 import "uu5g04-bricks";
-import { createVisualComponent } from "uu5g04-hooks";
+import { createVisualComponent, useEffect } from "uu5g04-hooks";
 
 import Config from "./config/config.js";
 const STATICS = {
@@ -14,14 +14,28 @@ export const Leaderboard = createVisualComponent({
   ...STATICS,
 
   //@@viewOn:propTypes
+  propTypes: {
+    updateScore: UU5.PropTypes.function,
+  },
   //@@viewOff:propTypes
 
   //@@viewOn:defaultProps
+  defaultProps: {
+    updateScore: () => {},
+  },
+
   //@@viewOff:defaultProps
 
   render(props) {
     //@@viewOn:hooks
-    const score = useSelector((state) => state.score);
+    const score = useSelector((state) => {
+      return state.score;
+    });
+
+    useEffect(() => {
+      props.updateScore(score);
+      console.log(score);
+    }, [score]);
     //@@viewOff:hooks
 
     //@@viewOn:private
@@ -35,6 +49,7 @@ export const Leaderboard = createVisualComponent({
       <div {...attrs} className="score-box">
         <div className="your-score">
           <h2>Your Score: {score}</h2>
+          {/*{props.updateScore()}*/}
         </div>
       </div>
     );
