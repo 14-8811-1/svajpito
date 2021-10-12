@@ -1,4 +1,5 @@
 //@@viewOn:imports
+import { Provider } from "react-redux";
 import UU5 from "uu5g04";
 import "uu5g04-bricks";
 import { createVisualComponent, useState, useRef, useEffect } from "uu5g04-hooks";
@@ -10,6 +11,11 @@ import BasicInfo from "../room/basic-info/basic-info";
 import Calls from "../calls";
 import PlayersProvider from "../player/list/context/players-provider";
 import List from "../player/list/list";
+
+import store from "../game/store";
+import Game from "../game/index";
+import Leaderboard from "../game/leaderboard";
+
 //@@viewOff:imports
 
 const STATICS = {
@@ -63,8 +69,6 @@ export const RoomDetail = createVisualComponent({
     //@@viewOff:private
     //@@viewOn:interface
     //@@viewOff:interface
-    debugger;
-    console.log(eventSourceRef.current);
 
     //@@viewOn:render
     const attrs = UU5.Common.VisualComponent.getAttrs(props);
@@ -76,6 +80,16 @@ export const RoomDetail = createVisualComponent({
             <List />
           </PlayersProvider>
         </RoomContextResolver>
+        <Provider store={store}>
+          <div>
+            <div>
+              <Leaderboard />
+            </div>
+            <div>
+              <Game />
+            </div>
+          </div>
+        </Provider>
       </div>
     );
     //@@viewOff:render
