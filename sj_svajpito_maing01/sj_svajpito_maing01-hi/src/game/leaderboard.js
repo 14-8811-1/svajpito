@@ -1,74 +1,45 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { fetchPlayers } from "./store";
-import ScoreForm from "./score-form";
+import { useSelector } from "react-redux";
+import * as UU5 from "uu5g04";
+import "uu5g04-bricks";
+import { createVisualComponent } from "uu5g04-hooks";
 
-class Leaderboard extends Component {
-  constructor(props) {
-    super(props);
-    this.findTopPlayers = this.findTopPlayers.bind(this);
-  }
-  componentDidMount() {
-    this.props.fetchPlayers();
-  }
-  findTopPlayers(players) {
-    for (let j = 0; j < players.length; j++) {
-      for (let i = 0; i < players.length; i++) {
-        let curr = players[i];
-        let next = players[i + 1];
-        if (next && curr.score < next.score) {
-          let temp = players[i];
-          players[i] = players[i + 1];
-          players[i + 1] = temp;
-        }
-      }
-    }
-    return players.slice(0, 3);
-  }
-  render() {
-    const { players } = this.props;
-    const topPlayers = this.findTopPlayers(players);
+import Config from "./config/config.js";
+const STATICS = {
+  //@@viewOn:statics
+  displayName: Config.TAG + "Leaderboard",
+  //@@viewOff:statics
+};
+
+export const Leaderboard = createVisualComponent({
+  ...STATICS,
+
+  //@@viewOn:propTypes
+  //@@viewOff:propTypes
+
+  //@@viewOn:defaultProps
+  //@@viewOff:defaultProps
+
+  render(props) {
+    //@@viewOn:hooks
+    const score = useSelector((state) => state.score);
+    //@@viewOff:hooks
+
+    //@@viewOn:private
+    //@@viewOff:private
+    //@@viewOn:interface
+    //@@viewOff:interface
+
+    //@@viewOn:render
+    const attrs = UU5.Common.VisualComponent.getAttrs(props);
     return (
-      <div className="score-box">
-        <div className="leaderboard">
-          <h2>Leaderboard</h2>
-          <div className="players-and-scores">
-            <div className="top-players">
-              {topPlayers.map((player) => {
-                return (
-                  <div key={player.id} className="top-player">
-                    <p>{player.name}</p>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="top-scores">
-              {topPlayers.map((player) => {
-                return (
-                  <div key={player.id} className="top-score">
-                    <p>{player.score}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+      <div {...attrs} className="score-box">
         <div className="your-score">
-          <ScoreForm setTopPlayers={this.setTopPlayers} />
-          <h2>Your Score: {this.props.score}</h2>
+          <h2>Your Score: {score}</h2>
         </div>
       </div>
     );
-  }
-}
-
-const mapState = (state) => ({
-  players: state.players,
-  score: state.score,
+    //@@viewOff:render
+  },
 });
 
-const mapDispatch = (dispatch) => ({
-  fetchPlayers: () => dispatch(fetchPlayers()),
-});
-
-export default connect(mapState, mapDispatch)(Leaderboard);
+export default Leaderboard;
