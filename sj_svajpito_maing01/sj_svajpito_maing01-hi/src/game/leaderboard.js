@@ -34,7 +34,6 @@ export const Leaderboard = createVisualComponent({
 
     useEffect(() => {
       props.updateScore(score);
-      console.log(score);
     }, [score]);
     //@@viewOff:hooks
 

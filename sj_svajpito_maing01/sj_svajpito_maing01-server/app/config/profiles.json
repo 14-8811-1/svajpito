@@ -46,11 +46,19 @@
         "sysStateList": ["active"],
         "profileList": ["Public"]
       },
+      "room/join2": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
       "room/start": {
         "sysStateList": ["active"],
         "profileList": ["Public"]
       },
       "game/update": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "game/update2": {
         "sysStateList": ["active"],
         "profileList": ["Public"]
       }

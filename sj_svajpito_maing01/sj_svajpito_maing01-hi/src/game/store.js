@@ -12,6 +12,11 @@ const ADD_PLAYER = "ADD_PLAYER";
 export const UPDATE_SCORE = "UPDATE_SCORE";
 const GAME_OVER = "GAME_OVER";
 
+export const SET_PLAYER_LIST = "SET_PLAYER_LIST";
+export const ADD_TO_PLAYER_LIST = "ADD_TO_PLAYER_LIST";
+export const REMOVE_FROM_PLAYER_LIST = "REMOVE_FROM_PLAYER_LIST";
+export const UPDATE_PLAYER_LIST = "UPDATE_PLAYER_LIST";
+
 //ACTION CREATORS
 const receivedPlayers = (players) => ({
   type: GET_PLAYERS,
@@ -26,6 +31,26 @@ const playerAdded = (player) => ({
 export const updateScore = (score) => ({
   type: UPDATE_SCORE,
   score,
+});
+
+export const updatePlayerList = (playerList) => ({
+  type: UPDATE_PLAYER_LIST,
+  playerList,
+});
+
+export const setPlayerList = (playerList) => ({
+  type: SET_PLAYER_LIST,
+  playerList,
+});
+
+export const addToPlayerList = (playerList) => ({
+  type: ADD_TO_PLAYER_LIST,
+  playerList,
+});
+
+export const removeFromPlayerList = (playerList) => ({
+  type: REMOVE_FROM_PLAYER_LIST,
+  playerList,
 });
 
 export const gameIsOver = () => ({
@@ -64,6 +89,14 @@ const reducer = (state = initState, action) => {
       return { ...state, players: [...state.players, action.player] };
     case UPDATE_SCORE:
       return { ...state, score: action.score };
+    case SET_PLAYER_LIST:
+      return { ...state, playerList: action.playerList };
+    case ADD_TO_PLAYER_LIST:
+      return { ...state, playerList: [...state.playerList, action.player] };
+    case REMOVE_FROM_PLAYER_LIST:
+      return { ...state, playerList: [...state.playerList.filter((p) => p.uuIdentity !== action.player.uuIdentity)] };
+    case UPDATE_PLAYER_LIST:
+      return { ...state, playerList: [...[], ...action.playerList] };
     case GAME_OVER:
       return { ...state, gameOver: true };
     default:

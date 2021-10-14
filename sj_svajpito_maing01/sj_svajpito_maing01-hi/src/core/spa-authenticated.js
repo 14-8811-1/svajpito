@@ -11,6 +11,10 @@ import Bottom from "./bottom";
 import Home from "../routes/home";
 import SpaContext from "./spa-context.js";
 // import RoomDetail from "../routes/room-detail";
+
+import { Provider } from "react-redux";
+import store from "../game/store";
+
 //@@viewOff:imports
 
 const STATICS = {
@@ -22,6 +26,7 @@ const STATICS = {
 const About = UU5.Common.Component.lazy(() => import("../routes/about"));
 const Rooms = UU5.Common.Component.lazy(() => import("../routes/rooms"));
 const RoomDetail = UU5.Common.Component.lazy(() => import("../routes/room-detail"));
+const RoomDetail2 = UU5.Common.Component.lazy(() => import("../routes/room-detail-2"));
 const InitAppWorkspace = UU5.Common.Component.lazy(() => import("../routes/init-app-workspace"));
 const ControlPanel = UU5.Common.Component.lazy(() => import("../routes/control-panel"));
 
@@ -32,6 +37,7 @@ const ROUTES = {
   about: { component: <About /> },
   rooms: { component: <Rooms /> },
   roomdetail: { component: <RoomDetail /> },
+  roomdetail2: { component: <RoomDetail2 /> },
   "sys/uuAppWorkspace/initUve": { component: <InitAppWorkspace /> },
   controlPanel: { component: <ControlPanel /> },
 };
@@ -60,31 +66,33 @@ export const SpaAuthenticated = createVisualComponent({
     return (
       <Plus4U5.App.MenuProvider activeItemId={initialActiveItemId}>
         <SpaContext>
-          <Plus4U5.App.Page
-            {...props}
-            top={<Plus4U5.App.TopBt />}
-            topFixed="smart"
-            bottom={<Bottom />}
-            type={3}
-            displayedLanguages={["cs", "en"]}
-            left={<Left />}
-            leftWidth="!xs-300px !s-300px !m-288px !l-288px !xl-288px"
-            leftFixed
-            leftRelative="m l xl"
-            leftResizable="m l xl"
-            leftResizableMinWidth={220}
-            leftResizableMaxWidth={500}
-            isLeftOpen="m l xl"
-            showLeftToggleButton
-            fullPage
-          >
-            <Plus4U5.App.MenuConsumer>
-              {({ setActiveItemId }) => {
-                let handleRouteChanged = ({ useCase, parameters }) => setActiveItemId(useCase || DEFAULT_USE_CASE);
-                return <UU5.Common.Router routes={ROUTES} controlled={false} onRouteChanged={handleRouteChanged} />;
-              }}
-            </Plus4U5.App.MenuConsumer>
-          </Plus4U5.App.Page>
+          <Provider store={store}>
+            <Plus4U5.App.Page
+              {...props}
+              top={<Plus4U5.App.TopBt />}
+              topFixed="smart"
+              bottom={<Bottom />}
+              type={3}
+              displayedLanguages={["cs", "en"]}
+              left={<Left />}
+              leftWidth="!xs-300px !s-300px !m-288px !l-288px !xl-288px"
+              leftFixed
+              leftRelative="m l xl"
+              leftResizable="m l xl"
+              leftResizableMinWidth={220}
+              leftResizableMaxWidth={500}
+              isLeftOpen="m l xl"
+              showLeftToggleButton
+              fullPage
+            >
+              <Plus4U5.App.MenuConsumer>
+                {({ setActiveItemId }) => {
+                  let handleRouteChanged = ({ useCase, parameters }) => setActiveItemId(useCase || DEFAULT_USE_CASE);
+                  return <UU5.Common.Router routes={ROUTES} controlled={false} onRouteChanged={handleRouteChanged} />;
+                }}
+              </Plus4U5.App.MenuConsumer>
+            </Plus4U5.App.Page>
+          </Provider>
         </SpaContext>
       </Plus4U5.App.MenuProvider>
     );

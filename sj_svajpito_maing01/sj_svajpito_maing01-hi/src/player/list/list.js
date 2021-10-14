@@ -5,6 +5,7 @@
 //@@viewOff:revision
 
 //@@viewOn:imports
+import { useSelector } from "react-redux";
 import UU5 from "uu5g04";
 import { createVisualComponent, useState } from "uu5g04-hooks";
 import { useSubApp, useSubAppData } from "uu_plus4u5g01-context";
@@ -60,13 +61,23 @@ const List = createVisualComponent({
   render(props) {
     //@@viewOn:hooks
     let players = usePlayers();
-    let { data: subAppData } = useSubAppData();
+    // let { data: subAppData } = useSubAppData();
     let subApp = useSubApp();
 
-    let playerDataList = players?.playerList;
-    console.log(playerDataList);
-    //controlling opening modals through state and props
+    // let playerDataList = players?.playerList;
+    // console.log(playerDataList);
 
+    // const playerDataList = useSelector((state) => {
+    //   return state.playerList;
+    // });
+    // const score = useSelector((state) => {
+    //   return state.score;
+    // });
+    // console.log()
+    //controlling opening modals through state and props
+    // useEffect(() => {
+    //
+    // }, [score]);
     //@@viewOff:hooks
 
     //@@viewOn:private
@@ -92,11 +103,15 @@ const List = createVisualComponent({
         help={<UU5.Bricks.Lsi lsi={Lsi.listHelp} />}
         hideCopyComponent
       >
-        <DataObjectStateResolver dataObject={subAppData} height={PLACEHOLDER_HEIGHT}>
-          <>
-            <ListView playerList={playerDataList} baseUri={subApp.baseUri} />
-          </>
-        </DataObjectStateResolver>
+        {/*<DataObjectStateResolver dataObject={subAppData} height={PLACEHOLDER_HEIGHT}>*/}
+        {/*<>*/}
+        {/*{playerDataList && playerDataList[0]?.score}*/}
+        {/*{score}*/}
+        <ListView
+          // playerList={playerDataList}
+          baseUri={subApp.baseUri} />
+        {/*</>*/}
+        {/*</DataObjectStateResolver>*/}
       </UuP.Bricks.ComponentWrapper>
     );
     //@@viewOff:render

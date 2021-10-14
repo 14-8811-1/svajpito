@@ -9,7 +9,7 @@ import UU5 from "uu5g04";
 import "uu5g04-bricks";
 import { createVisualComponent } from "uu5g04-hooks";
 import Uu5Tiles from "uu5tilesg02";
-
+import { useSelector } from "react-redux";
 import DetailsView from "./view/detail-view";
 
 import Config from "../config/config";
@@ -42,6 +42,11 @@ const ListView01 = createVisualComponent({
 
   render(props) {
     //@@viewOn:hooks
+    const playerDataList = useSelector((state) => {
+      return state.playerList;
+    });
+
+    console.log(playerDataList);
     //@@viewOff:hooks
 
     //@@viewOn:private
@@ -52,7 +57,7 @@ const ListView01 = createVisualComponent({
 
     //@@viewOn:render
     return (
-      <Uu5Tiles.ControllerProvider data={props.playerList}>
+      <Uu5Tiles.ControllerProvider data={playerDataList}>
         <Uu5Tiles.FilterBar />
         <Uu5Tiles.InfoBar sortable={false} />
         <DetailsView baseUri={props.baseUri} />

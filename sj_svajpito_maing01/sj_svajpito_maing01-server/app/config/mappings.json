@@ -52,8 +52,19 @@
         "httpMethod": "POST",
         "type": "CMD"
       },
+      "game/update2": {
+        "realization": "api/controllers/GameController.update2",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
       "room/join": {
         "realization": "api/controllers/RoomController.join",
+        "httpMethod": "GET",
+        "type": "CMD",
+        "produces": "text/event-stream"
+      },
+      "room/join2": {
+        "realization": "api/controllers/RoomController.join2",
         "httpMethod": "GET",
         "type": "CMD",
         "produces": "text/event-stream"

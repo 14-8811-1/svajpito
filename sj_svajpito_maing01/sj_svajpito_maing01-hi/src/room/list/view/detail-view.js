@@ -79,7 +79,7 @@ const DetailView = createVisualComponent({
             return (
               <UU5.Bricks.Link
                 onClick={(c) => {
-                  UU5.Environment.setRoute("roomdetail", { id: cellProps.data.data.id });
+                  UU5.Environment.setRoute("roomdetail2", { id: cellProps.data.data.id });
                 }}
               >
                 Join
