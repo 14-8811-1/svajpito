@@ -32,6 +32,26 @@ class UpdateAbl {
       gameRoom.sendPlayerUpdate(player, gameId, "playerMoved");
     }
 
+    if (dtoIn.identifier === "starCollected") {
+      let player = gameRoom.getPlayer(uuIdentity);
+      player.increaseScore(10);
+
+      let star = gameRoom.getStar();
+
+      let x = Math.floor(Math.random() * 700) + 50;
+      let y = Math.floor(Math.random() * 500) + 50;
+      star.setPosition(x, y);
+
+      gameRoom.sendStarUpdate(player, gameId, "starLocation");
+
+      return {
+        identifier: "starLocation",
+        data: gameRoom.getStar().getStarInfo(),
+      }
+        // io.emit('starLocation', star);
+        // io.emit('scoreUpdate', scores);
+    }
+
     return { uuAppErrorMap };
   }
 }

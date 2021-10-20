@@ -96,20 +96,20 @@ export default class MainScene extends Phaser.Scene {
     // });
 
     //TODO
-    // UU5.Environment.EventListener.registerEvent("starLocation", "12345", (starLocation) => {
-    //   if (self.star) self.star.destroy();
-    //   self.star = self.physics.add.image(starLocation.x, starLocation.y, "star");
-    //   self.physics.add.overlap(
-    //     self.ship,
-    //     self.star,
-    //     function () {
-    //       UU5.Environment.EventListener.triggerEvent("starCollected");
-    //       // this.socket.emit("starCollected");
-    //     },
-    //     null,
-    //     self
-    //   );
-    // });
+    UU5.Environment.EventListener.registerEvent("starLocation", UU5.Common.Tools.generateUUID(16), (starLocation) => {
+      if (self.star) self.star.destroy();
+      self.star = self.physics.add.image(starLocation.x, starLocation.y, "star");
+      self.physics.add.overlap(
+        self.ship,
+        self.star,
+        function () {
+          UU5.Environment.EventListener.triggerEvent("starCollected");
+          // this.socket.emit("starCollected");
+        },
+        null,
+        self
+      );
+    });
 
     // this.socket.on("starLocation", function (starLocation) {
     //   if (self.star) self.star.destroy();

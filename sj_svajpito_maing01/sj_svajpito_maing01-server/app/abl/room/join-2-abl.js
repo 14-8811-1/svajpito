@@ -36,17 +36,10 @@ class JoinAbl {
         identifier: "currentPlayers",
         data: gameRoom.getPlayers().map(p => p.getPlayerInfo()),
       },
-      // {
-      //   identifier: "starLocation",
-      //   data: {
-      //     x: Math.floor(Math.random() * 700) + 50,
-      //     y: Math.floor(Math.random() * 500) + 50,
-      //   },
-      // },
-      // {
-      //   identifier: "newPlayer",
-      //   data: gameRoom.getPlayer(uuIdentity).getPlayerInfo(),
-      // },
+      {
+        identifier: "starLocation",
+        data: gameRoom.getStar().getStarInfo(),
+      },
     ];
     response.setHeader("Content-Type", "text/event-stream");
     response.setHeader("Cache-Control", "no-cache,no-transform");

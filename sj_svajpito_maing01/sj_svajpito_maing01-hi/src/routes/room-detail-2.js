@@ -84,16 +84,24 @@ export const RoomDetail = createVisualComponent({
           console.log("Error", event);
         };
 
-        UU5.Environment.EventListener.registerEvent("playerMovement", UU5.Common.Tools.generateUUID(16), (data) => {
+        UU5.Environment.EventListener.registerEvent("playerMovement", UU5.Common.Tools.generateUUID(16), async (data) => {
           data.gameId = props.params.id;
 
           moveNumber.current += 1;
           if (moveNumber.current % 3 === 0 || moveNumber < 10) {
-            Calls.update({
+            await Calls.updatePlayerPosition({
               identifier: "playerMovement",
               data,
             });
           }
+        });
+        UU5.Environment.EventListener.registerEvent("starCollected", UU5.Common.Tools.generateUUID(16), async (data = {}) => {
+          data.gameId = props.params.id;
+           let response = await Calls.updateStar({
+              identifier: "starCollected",
+              data,
+            });
+          processMessages(response.identifier, response.data);
         });
       }, 2000);
     }

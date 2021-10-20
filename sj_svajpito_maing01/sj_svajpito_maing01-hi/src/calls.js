@@ -46,7 +46,11 @@ let Calls = {
     let commandUri = Calls.getCommandUri("game/update");
     return Calls.call("post", commandUri, dtoInData);
   },
-  update(dtoInData) {
+  updatePlayerPosition(dtoInData) {
+    let commandUri = Calls.getCommandUri("game/update2");
+    return Calls.call("post", commandUri, dtoInData);
+  },
+  updateStar(dtoInData) {
     let commandUri = Calls.getCommandUri("game/update2");
     return Calls.call("post", commandUri, dtoInData);
   },

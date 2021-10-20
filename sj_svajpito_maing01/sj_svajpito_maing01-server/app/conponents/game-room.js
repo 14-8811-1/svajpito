@@ -1,13 +1,19 @@
 const Player = require("./player");
+const Star = require("./star");
 
 class GameRoom {
   constructor(id) {
     this._id = id;
     this._players = [];
+    this._start = new Star();
   }
 
   getId() {
     return this._id;
+  }
+
+  getStar() {
+    return this._start;
   }
 
   addPlayer({ name, uuIdentity, client, position }) {
@@ -64,12 +70,21 @@ class GameRoom {
     if (playerInfo) {
       this._informPlayers(
         playerInfo,
-        // this._players.map((p) => p.getPlayerInfo()),
         gameId || this._id,
         skipPlayer,
         identifier
       );
     }
+  }
+
+  sendStarUpdate(skipPlayer, gameId, identifier) {
+    let starInfo = this._start.getStarInfo();
+      this._informPlayers(
+        starInfo,
+        gameId || this._id,
+        skipPlayer,
+        identifier
+      );
   }
 
   _sendPlayerList(skipPlayer, gameId) {
