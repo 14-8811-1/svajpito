@@ -137,7 +137,7 @@ class GameRoom {
     this._informPlayers(this.getGameRoomShortInfo(), this._id, null, "gameTick");
 
     if (this._time >= TIME_LIMIT) {
-      this._stop();
+      this.stop();
     }
   }
 

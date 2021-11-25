@@ -12,7 +12,13 @@ import AlertText from "../overlay/alert";
 import Timer from "../overlay/timer";
 
 const AUDIO_FILES = {
-  death: ["assets/audio/death/death1.wav", "assets/audio/death/death2.wav"],
+  death: [
+    "assets/audio/death/death1.wav", 
+    "assets/audio/death/death2.wav",
+    "assets/audio/death/death3.mp3",
+    "assets/audio/death/death4.mp3",
+    "assets/audio/death/death5.mp3",
+],
   jump: [
     "assets/audio/jump/jump1.wav",
     "assets/audio/jump/jump2.mp3",
@@ -25,6 +31,11 @@ const AUDIO_FILES = {
     "assets/audio/woohoo/woohoo3.wav",
     "assets/audio/woohoo/woohoo4.wav",
     "assets/audio/woohoo/woohoo5.wav",
+    "assets/audio/woohoo/woohoo6.mp3",
+    "assets/audio/woohoo/woohoo7.mp3",
+    "assets/audio/woohoo/woohoo8.mp3",
+    "assets/audio/woohoo/woohoo9.mp3",
+    "assets/audio/woohoo/woohoo10.mp3",
   ],
 };
 
@@ -129,11 +140,10 @@ export default class MainScene extends Phaser.Scene {
     /**
      * load current players for the new player when he joins the game
      */
-    onEvent("currentPlayers", (players) => {
-      console.log({ players });
+    onEvent("initialGameState", (data) => {
       let uuIdentity = UU5.Environment.getSession().getIdentity().getUuIdentity();
-      //console.log(uuIdentity);
-      players.forEach(function (player) {
+      console.log("initialGameState received", uuIdentity, data);
+      data.players.forEach(function (player) {
         if (player.uuIdentity === uuIdentity) {
           self.addPlayer(player);
         } else {
@@ -144,6 +154,9 @@ export default class MainScene extends Phaser.Scene {
       this.gameRoom = data;
       this.timer.setTime(this.gameRoom.time);
       console.log("initialGameState prepped", this.gameRoom);
+      if (this.gameRoom.state === "counted") {
+        UU5.Environment.setRoute("score");
+      }
     });
 
     /**
@@ -265,7 +278,7 @@ export default class MainScene extends Phaser.Scene {
         this.alertText.update("you cant shoot");
       } else if (activation.power === "cantMove") {
         this.player.cantMove();
-      this.alertText.update("you cant move");
+        this.alertText.update("you cant move");
       }
     });
 

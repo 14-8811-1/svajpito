@@ -108,7 +108,7 @@ class UpdateAbl {
    * @returns {{identifier: string, data: {x: *, y: *}}}
    */
   processStarCollected(player, gameRoom, uuIdentity) {
-    player.increaseScore(10);
+    // player.increaseScore(10);
 
     let star = gameRoom.getStar();
     let x = Math.floor(Math.random() * 700) + 50;
