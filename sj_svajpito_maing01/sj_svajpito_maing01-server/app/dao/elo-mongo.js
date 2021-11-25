@@ -15,7 +15,7 @@ class EloMongo extends UuObjectDao {
   }
 
   async update(awid, uuIdentity, score) {
-    return super.findOneAndUpdate({ awid, uuIdentity }, { score });
+    return super.findOneAndUpdate({ awid, uuIdentity }, { score }, "NONE");
   }
 
   async list(awid, pageInfo) {
