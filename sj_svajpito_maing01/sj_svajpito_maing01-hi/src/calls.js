@@ -86,6 +86,10 @@ let Calls = {
     let commandUri = Calls.getCommandUri("room/list", dtoIn.uri);
     return Calls.call("get", commandUri, dtoIn.data);
   },
+  scoreList(dtoIn) {
+    let commandUri = Calls.getCommandUri("elo/list", dtoIn.uri);
+    return Calls.call("get", commandUri, dtoIn.data);
+  },
   roomLoad(dtoIn) {
     let commandUri = Calls.getCommandUri("room/get", dtoIn.uri);
     return Calls.call("get", commandUri, dtoIn.data);

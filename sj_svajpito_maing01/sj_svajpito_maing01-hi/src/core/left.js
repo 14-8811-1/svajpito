@@ -48,7 +48,10 @@ export const Left = createVisualComponent({
         <Plus4U5.App.MenuTree
           borderBottom
           // NOTE Item "id" equals to useCase so that item gets automatically selected when route changes (see spa-autheticated.js).
-          items={[{ id: "home", href: "home", content: <UU5.Bricks.Lsi lsi={Lsi.left.home} /> }, { id: "rooms", href: "rooms", content: <UU5.Bricks.Lsi lsi={Lsi.left.rooms} /> }]}
+          items={[{ id: "home", href: "home", content: <UU5.Bricks.Lsi lsi={Lsi.left.home} /> },
+            { id: "rooms", href: "rooms", content: <UU5.Bricks.Lsi lsi={Lsi.left.rooms} /> },
+            { id: "score", href: "score", content: <UU5.Bricks.Lsi lsi={Lsi.left.score} /> }
+          ]}
         />
       </Plus4U5.App.Left>
     );

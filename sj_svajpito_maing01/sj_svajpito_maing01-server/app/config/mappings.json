@@ -73,6 +73,16 @@
         "realization": "api/controllers/RoomController.start",
         "httpMethod": "POST",
         "type": "CMD"
+      },
+      "elo/update": {
+        "realization": "api/controllers/EloController.update",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "elo/list": {
+        "realization": "api/controllers/EloController.list",
+        "httpMethod": "GET",
+        "type": "CMD"
       }
     }
   }

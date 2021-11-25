@@ -9,31 +9,14 @@ import Config from "./config/config.js";
 import Lsi from "../config/lsi.js";
 import WelcomeRow from "../bricks/welcome-row.js";
 import Calls from "../calls";
+import ListContextResolver from "../score/list/context/list-context-resolver";
+import List from "../score/list/list";
 //@@viewOff:imports
 
 const STATICS = {
   //@@viewOn:statics
-  displayName: Config.TAG + "Home",
+  displayName: Config.TAG + "Score",
   //@@viewOff:statics
-};
-
-const CLASS_NAMES = {
-  welcomeRow: () => Config.Css.css`
-    padding: 56px 0 20px;
-    max-width: 624px;
-    margin: 0 auto;
-    text-align: center;
-
-    ${UU5.Utils.ScreenSize.getMinMediaQueries("s", `text-align: left;`)}
-
-    .uu5-bricks-header {
-      margin-top: 8px;
-    }
-
-    .plus4u5-bricks-user-photo {
-      margin: 0 auto;
-    }
-  `,
 };
 
 export const Home = createVisualComponent({
@@ -54,7 +37,13 @@ export const Home = createVisualComponent({
 
     //@@viewOn:render
     const attrs = UU5.Common.VisualComponent.getAttrs(props);
-    return <div {...attrs}>FU</div>;
+    return (
+      <div {...attrs}>
+        <ListContextResolver>
+          <List />
+        </ListContextResolver>
+      </div>
+    );
     //@@viewOff:render
   },
 });

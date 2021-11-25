@@ -10,6 +10,9 @@
         "room": {
           "realization": "dao/RoomMongo",
           "maxNoI": 10000
+        },
+        "elo": {
+          "realization": "dao/EloMongo"
         }
       }
     }

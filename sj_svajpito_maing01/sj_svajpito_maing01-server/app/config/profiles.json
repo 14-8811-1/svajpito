@@ -1,14 +1,13 @@
 {
   "{asid}": {
-    "profileList": ["AsidAuthorities", "AsidExecutives", "AsidLicenseOwner", "Public"],
-    "useCaseMap": {
-    }
+    "profileList": ["AsidAuthorities","AsidExecutives","AsidLicenseOwner","Public"],
+    "useCaseMap": {}
   },
   "*": {
-    "profileList": ["Authorities", "Executives", "AwidLicenseOwner", "Public"],
+    "profileList": ["Authorities","Executives","AwidLicenseOwner","Public"],
     "useCaseMap": {
       "sys/uuAppWorkspace/init": {
-        "sysStateList": ["created", "active"],
+        "sysStateList": ["created","active"],
         "profileList": ["AwidLicenseOwner"]
       },
       "defaultUve": {
@@ -16,7 +15,7 @@
       },
       "sys/uuAppWorkspace/initUve": {
         "sysStateList": ["created"],
-        "profileList": ["Public", "AwidLicenseOwner"]
+        "profileList": ["Public","AwidLicenseOwner"]
       },
       "sse/listen": {
         "sysStateList": ["active"],
@@ -59,6 +58,14 @@
         "profileList": ["Public"]
       },
       "game/update2": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "elo/update": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "elo/list": {
         "sysStateList": ["active"],
         "profileList": ["Public"]
       }

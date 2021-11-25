@@ -1,4 +1,5 @@
 //@@viewOn:imports
+import { Provider } from "react-redux";
 import UU5 from "uu5g04";
 import "uu5g04-bricks";
 import { createVisualComponent, useState } from "uu5g04-hooks";
@@ -12,7 +13,6 @@ import Home from "../routes/home";
 import SpaContext from "./spa-context.js";
 // import RoomDetail from "../routes/room-detail";
 
-import { Provider } from "react-redux";
 import store from "../game/store";
 
 //@@viewOff:imports
@@ -27,6 +27,7 @@ const About = UU5.Common.Component.lazy(() => import("../routes/about"));
 const Rooms = UU5.Common.Component.lazy(() => import("../routes/rooms"));
 const RoomDetail = UU5.Common.Component.lazy(() => import("../routes/room-detail"));
 const RoomDetail2 = UU5.Common.Component.lazy(() => import("../routes/room-detail-2"));
+const Score = UU5.Common.Component.lazy(() => import("../routes/score"));
 const InitAppWorkspace = UU5.Common.Component.lazy(() => import("../routes/init-app-workspace"));
 const ControlPanel = UU5.Common.Component.lazy(() => import("../routes/control-panel"));
 
@@ -37,6 +38,7 @@ const ROUTES = {
   about: { component: <About /> },
   rooms: { component: <Rooms /> },
   roomdetail: { component: <RoomDetail /> },
+  score: { component: <Score /> },
   roomdetail2: { component: <RoomDetail2 /> },
   "sys/uuAppWorkspace/initUve": { component: <InitAppWorkspace /> },
   controlPanel: { component: <ControlPanel /> },

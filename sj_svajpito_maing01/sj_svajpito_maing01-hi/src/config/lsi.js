@@ -13,6 +13,9 @@ const Lsi = {
       cs: "Místnosti",
       en: "Rooms",
     },
+    score: {
+      en: "High score",
+    },
     about: {
       cs: "O aplikaci",
       en: "About Application",
