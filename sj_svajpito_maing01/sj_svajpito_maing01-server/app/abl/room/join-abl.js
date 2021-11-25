@@ -29,10 +29,10 @@ class JoinAbl {
         identifier: "currentPlayers",
         data: gameRoom.getPlayers().map((p) => p.getPlayerInfo()),
       },
-      // {
-      //   identifier: "starLocation",
-      //   data: gameRoom.getStar().getStarInfo(),
-      // },
+      {
+        identifier: "starLocation",
+        data: gameRoom.getStar().getStarInfo(),
+      },
     ];
     response.setHeader("Content-Type", "text/event-stream");
     response.setHeader("Cache-Control", "no-cache,no-transform");

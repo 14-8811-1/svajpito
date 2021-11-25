@@ -229,10 +229,20 @@ export default class MainScene extends Phaser.Scene {
         self.player,
         self.star,
         function (player, star) {
-          // player.setImmortal();
-          // player.setSpeedBoost();
-          // triggerEvent("superPower", { power: "cantShoot" });
-          triggerEvent("superPower", { power: "cantMove" });
+          let random = Math.floor(Math.random() * 4);
+          switch (random) {
+            case 0:
+              player.setImmortal();
+              break;
+            case 1:
+              player.setSpeedBoost();
+              break;
+            case 2:
+              triggerEvent("superPower", { power: "cantShoot" });
+              break;
+            case 3:
+              triggerEvent("superPower", { power: "cantMove" });
+          }
           self.star.destroy();
           triggerEvent("starCollected");
           console.log(`event triggered starLocation`);
@@ -244,8 +254,14 @@ export default class MainScene extends Phaser.Scene {
 
     onEvent("superPowerActivated", (activation) => {
       console.log("superPowerActivated", activation.power);
-      this.player.cantMove();
+      if (activation.power === "cantShoot") {
+        this.player.cantShot();
+        this.alertText.update("you cant shoot");
+      } else if (activation.power === "cantMove") {
+        this.player.cantMove();
       this.alertText.update("you cant move");
+
+      }
     });
 
     /**
