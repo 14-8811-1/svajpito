@@ -50,6 +50,7 @@ export default class MainScene extends Phaser.Scene {
     //PRELOAD SPRITES
     this.load.image("woods", "./assets/backgrounds/woods.png");
     this.load.image("star", "assets/star_gold.png");
+    this.load.image("orb", "assets/orb.png");
     this.load.spritesheet("newt", "assets/spriteSheets/newt.png", {
       frameWidth: 118.1,
       frameHeight: 131,
