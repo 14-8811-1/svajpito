@@ -1,6 +1,7 @@
 const Player = require("./player");
 const Star = require("./star");
 const Bullet = require("./bullet");
+const pickSpawnPoint = require("../helpers/spawner");
 
 class GameRoom {
   constructor(id) {
@@ -75,7 +76,13 @@ class GameRoom {
   }
 
   sendPlayerDead(skipPlayer, gameId, identifier, data) {
+    setTimeout(() => this.respawnPlayer(skipPlayer, gameId), 3000);
     this._informPlayers({ ...skipPlayer.getPlayerInfo(), ...data }, gameId || this._id, skipPlayer, identifier);
+  }
+
+  respawnPlayer(player, gameId) {
+    player.reset({ position: pickSpawnPoint() });
+    this._informPlayers(player.getPlayerInfo(), gameId || this._id, { uuIdentity: "" }, "respawn");
   }
 
   sendPlayerHit(skipPlayer, gameId, identifier, data) {

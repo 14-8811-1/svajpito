@@ -22,7 +22,7 @@ class UpdateAbl {
 
     let response = {};
     let player = gameRoom.getPlayer(uuIdentity);
-    if (player.IsAlive()) {
+    if (player && player.IsAlive()) {
       if (dtoIn.identifier === "playerMovement") this.processPlayerMovement(player, gameRoom, dtoIn.data, uuIdentity);
       if (dtoIn.identifier === "starCollected") response = this.processStarCollected(player, gameRoom, uuIdentity);
       if (dtoIn.identifier === "newBullet") this.processNewBullet(player, gameRoom, dtoIn.data, uuIdentity);

@@ -10,7 +10,14 @@ export default class HealthBar {
     this.p = 76 / 100;
     this.value = value;
 
-    this.tag = new Phaser.GameObjects.Text(scene, x, y, uuIdentity, { align: "center", fixedWidth: this.p * 100 - 4, fixedHeight: 12, fontSize: 8, stroke: "#000", fill: "#000" });
+    this.tag = new Phaser.GameObjects.Text(scene, x, y, uuIdentity, {
+      align: "center",
+      fixedWidth: this.p * 100 - 4,
+      fixedHeight: 12,
+      fontSize: 8,
+      stroke: "#000",
+      fill: "#000",
+    });
 
     this.fill = fill;
     this.uuIdentity = uuIdentity;

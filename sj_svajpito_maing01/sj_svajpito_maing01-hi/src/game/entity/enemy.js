@@ -81,6 +81,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setVelocity(velocityX || 0, velocityY || 0);
   }
 
+  update() {
+    this.healthBar.setPos(this.x + HEALTH_BAR_OFFSET_X, this.y + HEALTH_BAR_OFFSET_Y);
+  }
+
   /*
   // INTERPOLATION
 

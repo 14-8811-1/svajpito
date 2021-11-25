@@ -10,6 +10,23 @@ import Shot from "../../game/entity/shot";
 import Score from "../overlay/score";
 import AlertText from "../overlay/alert";
 
+const AUDIO_FILES = {
+  death: ["assets/audio/death/death1.wav", "assets/audio/death/death2.wav"],
+  jump: [
+    "assets/audio/jump/jump1.wav",
+    "assets/audio/jump/jump2.mp3",
+    "assets/audio/jump/jump3.mp3",
+    "assets/audio/jump/jump4.wav",
+  ],
+  woohoo: [
+    "assets/audio/woohoo/woohoo1.wav",
+    "assets/audio/woohoo/woohoo2.wav",
+    "assets/audio/woohoo/woohoo3.wav",
+    "assets/audio/woohoo/woohoo4.wav",
+    "assets/audio/woohoo/woohoo5.wav",
+  ],
+};
+
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
@@ -27,10 +44,23 @@ export default class MainScene extends Phaser.Scene {
     });
     this.load.image("ground", "assets/sprites/ground.png");
     this.load.image("mainGround", "assets/sprites/mainGround.png");
-    this.load.audio("jump", "assets/audio/jump.wav");
     this.load.audio("twinkle", "assets/audio/twinkle.wav");
+
+    this.load.audio("death.0", "assets/audio/death/death1.wav");
+
+    const loadMultipleAudioFiles = (identifier, paths) =>
+      paths.forEach((path, idx) => {
+        this.load.audio(`${identifier}_${idx}`, path);
+        console.log(`${identifier}_${idx}`, path);
+      });
+    Object.entries(AUDIO_FILES).forEach(([key, paths]) => loadMultipleAudioFiles(key, paths));
+
+    this.load.audio("countdown", "assets/audio/countdown.mp3");
+    this.load.audio("music", "assets/audio/music.mp3");
     // this.load.image("firefly", "assets/sprites/firefly.png");
   }
+
+  playRandom(identifier) {}
 
   //ANIMATIONS HELPER FUNC
   createAnimations() {
@@ -75,14 +105,34 @@ export default class MainScene extends Phaser.Scene {
     this.myBullets = this.physics.add.group();
     this.othersBullets = this.physics.add.group();
 
-    console.log(this.cameras.main.centerX, this.cameras.main.centerY)
+    this.sounds = {};
+    const prepareSound = (identifier, paths) => {
+      paths.forEach((path, idx) => {
+        const snd = this.sound.add(`${identifier}_${idx}`);
+        snd.volume = 0.5;
+        this.sounds[`${identifier}_${idx}`] = snd;
+      });
+      this.sounds[identifier] = {
+        play: () => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`].play(...arguments),
+        pick: () => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`],
+      };
+    };
+    Object.entries(AUDIO_FILES).forEach(([key, paths]) => prepareSound(key, paths));
+
+    this.sounds.twinkle = this.sound.add("twinkle");
+    this.sounds.countdown = this.sound.add("countdown");
+    this.sounds.countdown.volume = 0.5;
+
+    this.sounds.music = this.sound.add("music", { loop: true });
+    this.sounds.music.volume = 0.2;
 
     /**
      * load current players for the new player when he joins the game
      */
     onEvent("currentPlayers", (players) => {
+      console.log({ players });
       let uuIdentity = UU5.Environment.getSession().getIdentity().getUuIdentity();
-      console.log(uuIdentity);
+      //console.log(uuIdentity);
       players.forEach(function (player) {
         if (player.uuIdentity === uuIdentity) {
           self.addPlayer(player);
@@ -90,6 +140,20 @@ export default class MainScene extends Phaser.Scene {
           self.addOtherPlayers(player);
         }
       });
+    });
+
+    /**
+     *  new player location when he respawns
+     */
+    onEvent("respawn", (player) => {
+      let uuIdentity = UU5.Environment.getSession().getIdentity().getUuIdentity();
+      //console.log(uuIdentity);
+      console.log({ player });
+      if (player.uuIdentity === uuIdentity) {
+        self.addPlayer(player);
+      } else {
+        self.addOtherPlayers(player);
+      }
     });
 
     /**
@@ -261,11 +325,6 @@ export default class MainScene extends Phaser.Scene {
     //   child.setScale(0.1, 0.1);
     // });
 
-    //sounds
-    this.jumpSound = this.sound.add("jump");
-    this.jumpSound.volume = 0.5;
-    this.twinkle = this.sound.add("twinkle");
-
     //colliders
     // this.physics.add.collider(this.fireflies, this.groundGroup);
 
@@ -273,13 +332,14 @@ export default class MainScene extends Phaser.Scene {
     //launch OpeningScene
     // this.scene.launch("OpeningScene");
     this.scene.launch("MainScene");
+    // this.sounds.music.play();
 
     this.score = new Score(this, 0);
     this.alertText = new AlertText(this, "");
   }
 
   addPlayer(playerInfo) {
-    this.player = new Player(this, 20, 400, "newt", playerInfo).setScale(0.5);
+    this.player = new Player(this, 20, 400, "newt", playerInfo, this.sounds).setScale(0.5);
 
     // this.player.setBounce(0.2);
     this.player.body.setGravityY(350);
@@ -300,7 +360,7 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers.add(otherPlayer);
   }
 
-  // //COLLECT FIREFLY HELPER FUNC
+  // COLLECT FIREFLY HELPER FUNC
   // collectFirefly(player, firefly) {
   //   firefly.disableBody(true, true);
   //   this.score += 10;
@@ -311,9 +371,9 @@ export default class MainScene extends Phaser.Scene {
   update(time, delta) {
     //call player update
     if (this.player) {
-      this.player.update(this.cursors, this.jumpSound);
+      this.player.update(this.cursors, this.sounds.jump);
     }
-    //this.otherPlayers.getChildren().forEach(otherPlayer => otherPlayer.update(time, delta))
+    this.otherPlayers.getChildren().forEach((otherPlayer) => otherPlayer.update());
   }
 
   gameOver() {}
