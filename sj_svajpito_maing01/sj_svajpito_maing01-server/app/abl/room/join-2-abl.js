@@ -4,21 +4,12 @@ const GameRoom = require("../../conponents/game-room");
 const gameStorage = require("../../conponents/game-storage");
 
 class JoinAbl {
-  constructor() {
-    // this.gameRooms = [];
-  }
+  constructor() {}
 
   async join(uri, dtoIn, response, session, uuAppErrorMap = {}) {
-    // async join(response, uuAppErrorMap = {}) {
     let awid = uri.getAwid();
-
     let roomId = dtoIn.roomId;
-    let gameRoom = gameStorage.getGame({ awid, gameId: roomId }); //this.gameRooms.find((gr) => gr.getId() === roomId);
-    if (!gameRoom) {
-      gameRoom = new GameRoom(roomId);
-      gameStorage.addGame({ awid, gameRoom });
-      // this.gameRooms.push(gameRoom);
-    }
+    let gameRoom = this.getGameRoom(awid, roomId);
 
     let uuIdentity = session.getIdentity().getUuIdentity();
     let name = session.getIdentity().getName();
@@ -29,17 +20,17 @@ class JoinAbl {
       client: response,
     });
 
-    gameRoom.sendPlayerUpdate(player, roomId, "newPlayer");
+    gameRoom.sendPlayerUpdate(player, {}, roomId, "newPlayer");
 
     let data = [
       {
         identifier: "currentPlayers",
-        data: gameRoom.getPlayers().map(p => p.getPlayerInfo()),
+        data: gameRoom.getPlayers().map((p) => p.getPlayerInfo()),
       },
-      {
-        identifier: "starLocation",
-        data: gameRoom.getStar().getStarInfo(),
-      },
+      // {
+      //   identifier: "starLocation",
+      //   data: gameRoom.getStar().getStarInfo(),
+      // },
     ];
     response.setHeader("Content-Type", "text/event-stream");
     response.setHeader("Cache-Control", "no-cache,no-transform");
@@ -53,6 +44,15 @@ class JoinAbl {
     console.error("DISCONNECTED");
     let player = gameRoom.removePlayer(uuIdentity);
     gameRoom.sendPlayerUpdate(player, gameRoom.getId(), "disconnect");
+  }
+
+  getGameRoom(awid, roomId) {
+    let gameRoom = gameStorage.getGame({ awid, gameId: roomId });
+    if (!gameRoom) {
+      gameRoom = new GameRoom(roomId);
+      gameStorage.addGame({ awid, gameRoom });
+    }
+    return gameRoom;
   }
 }
 

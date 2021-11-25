@@ -3,7 +3,7 @@
   "uuSubAppDataStoreMap": {
     "primary": "mongodb://127.0.0.1:27017/svajpitoMainPrimary"
   },
-  "asid_license_owner_list": ["1611-9718-5210-0000", "7795-7461-9897-0000", "996-4062-3886-0000"],
+  "asid_license_owner_list": ["1611-9718-5210-0000", "7795-7461-9897-0000", "996-4062-3886-0000", "7795-7461-9897-0000"],
   "asid": "b97cd034edd4a68ee8612507b8aedf45",
   "log_level": "INFO",
   "uu_app_oidc_providers_oidcg02_uri": "https://uuapp-dev.plus4u.net/uu-oidc-maing02/eca71064ecce44b0a25ce940eb8f053d/oidc"

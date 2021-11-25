@@ -7,6 +7,7 @@ const STATES = {
 class Player {
   constructor({ name, uuIdentity, client, position = {}, rotation }) {
     this._name = name;
+    this._isAlive = true;
     this._uuIdentity = uuIdentity;
     this._client = client;
     this._state = STATES.READY;
@@ -25,6 +26,14 @@ class Player {
 
   setRotation(rotation) {
     this._rotation = rotation;
+  }
+
+  IsAlive() {
+    return this._isAlive;
+  }
+
+  setAlive(value) {
+    this._isAlive = value;
   }
 
   getPlayerInfo() {

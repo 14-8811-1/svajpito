@@ -1,23 +1,17 @@
 //@@viewOn:imports
-import { Provider } from "react-redux";
-import { useSelector } from "react-redux";
 import UU5 from "uu5g04";
 import "uu5g04-bricks";
 import { createVisualComponent, useState, useRef, useEffect } from "uu5g04-hooks";
 import "uu_plus4u5g01-bricks";
+import { onEvent, triggerEvent } from "../common/communication-helper";
 
 import Config from "./config/config.js";
 import RoomContextResolver from "../room/context/room-context-resolver";
-import BasicInfo from "../room/basic-info/basic-info";
 import Calls from "../calls";
-import PlayersProvider from "../player/list/context/players-provider";
-import List from "../player/list/list";
 
-// import store from "../game/store";
 import Game from "../game/index";
-import Leaderboard from "../game/leaderboard";
-import store, { UPDATE_PLAYER_LIST, ADD_TO_PLAYER_LIST, SET_PLAYER_LIST, REMOVE_FROM_PLAYER_LIST } from "../game/store";
-
+import BasicInfo from "../room/basic-info/basic-info";
+import PlayersProvider from "../player/list/context/players-provider";
 //@@viewOff:imports
 
 const STATICS = {
@@ -29,116 +23,97 @@ const STATICS = {
 export const RoomDetail = createVisualComponent({
   ...STATICS,
 
-  //@@viewOn:propTypes
-  //@@viewOff:propTypes
-
-  //@@viewOn:defaultProps
-  //@@viewOff:defaultProps
-
   render(props) {
-    const [waiting, setWaiting] = useState(false);
-    // const [playerList, setPlayerList] = useState([]);
-    // const [playerScore, setPlayerScore] = useState(0);
+    const [playerList, setPlayerList] = useState([]);
+    let moveNumber = useRef();
     let eventSourceRef = useRef();
-    const playerList = useSelector((state) => {
-      return state.playerList;
-    });
 
-    useEffect(() => {
-      poll();
-    }, []);
+    useEffect(() => initCommunication(), []);
 
     //@@viewOn:private
-    async function poll() {
-      setWaiting(true);
-      const session = UU5.Environment.getSession().getCallToken();
-      const eventSource = new EventSource(
-        `${Calls.getCommandUri("room/join")}?roomId=${props.params.id}&access_token=${session.token}`
-      );
-      eventSourceRef.current = eventSource;
 
-      eventSource.onmessage = (event) => {
-        const eventData = JSON.parse(event.data);
-        console.log(eventData);
-        if (eventData.identifier === "playerList") {
-          //TODO
-          // setPlayerList(eventData.data);
-          store.dispatch({ type: SET_PLAYER_LIST, playerList: eventData.data });
-        } else if (eventData.identifier === "playerAdd") {
-          store.dispatch({ type: ADD_TO_PLAYER_LIST, player: eventData.data });
-        } else if (eventData.identifier === "playerUpdate") {
-          console.log("here");
-          // let playerData = eventData.data;
-          // let players = [...playerList];
-          // let playerIndex = players.findIndex((p) => p.uuIdentity === playerData.uuIdentity);
-          // players[playerIndex] = playerData;
-          // store.dispatch({ type: UPDATE_PLAYER_LIST, playerList: players });
-          let { updatedPlayerList, player } = updatePlayerListValue(eventData.data);
-          store.dispatch({ type: UPDATE_PLAYER_LIST, playerList: updatedPlayerList });
-        } else if (eventData.identifier === "playerDelete") {
-          store.dispatch({ type: REMOVE_FROM_PLAYER_LIST, player: eventData.data });
-        }
-        // setLastValue((oldValue) => [...oldValue, data.message]);
-      };
-      eventSource.onopen = (event) => {
-        console.log("Open", event);
-      };
-      eventSource.onerror = (event) => {
-        console.log("Error", event);
-      };
+    /**
+     * Init the communication with server through eventSource
+     * @returns {Promise<void>}
+     */
+    async function initCommunication() {
+      moveNumber.current = 0;
+      setTimeout(() => {
+        let uuIdentity = UU5.Environment.getSession().getIdentity().getUuIdentity();
+        console.log(uuIdentity, "join");
+
+        const session = UU5.Environment.getSession().getCallToken();
+        const eventSource = new EventSource(
+          `${Calls.getCommandUri("room/join2")}?roomId=${props.params.id}&access_token=${session.token}`
+        );
+
+        eventSourceRef.current = eventSource;
+        eventSource.onmessage = (event) => {
+          const eventData = JSON.parse(event.data);
+          if (Array.isArray(eventData)) {
+            eventData.forEach((eventData) => {
+              processMessages(eventData.identifier, eventData.data);
+            });
+          } else {
+            processMessages(eventData.identifier, eventData.data);
+          }
+        };
+        eventSource.onopen = (event) => {
+          console.log("Open", event);
+        };
+        eventSource.onerror = (event) => {
+          console.log("Error", event);
+        };
+
+        registerEventsToCallServer();
+      }, 2000);
     }
 
-    function updatePlayerListValue(playerData) {
-      let updatedPlayerList = playerList || [];
-      let searchUuIdentity = playerData?.uuIdentity || UU5.Environment.getSession().getIdentity().getUuIdentity();
-      let playerIndex = playerList.findIndex((p) => p.uuIdentity === searchUuIdentity);
-      if (!playerIndex) {
-        return { updatedPlayerList };
-      }
+    /**
+     * Events which should call server based on the triggered event from Phaser
+     */
+    function registerEventsToCallServer() {
+      onEvent("playerMovement", async (data) => {
+        data.gameId = props.params.id;
+        moveNumber.current += 1;
+        await Calls.updatePlayerPosition(data, moveNumber);
+      });
 
-      if (playerData) {
-        updatedPlayerList[playerIndex] = playerData;
-      } else {
-        updatedPlayerList[playerIndex].score += 10;
-      }
+      onEvent("starCollected", async (data = {}) => {
+        data.gameId = props.params.id;
+        let response = await Calls.updateStar(data);
+        processMessages(response.identifier, response.data);
+      });
 
-      console.log({ updatedPlayerList, player: updatedPlayerList[playerIndex] });
-      return { updatedPlayerList, player: updatedPlayerList[playerIndex] };
+      onEvent("newBullet", async (data = {}) => {
+        data.gameId = props.params.id;
+        await Calls.newBullet(data);
+      });
+
+      onEvent("playerDead", async (data = {}) => {
+        data.gameId = props.params.id;
+        await Calls.playerDead(data);
+      });
     }
 
-    async function updateScore(newScore) {
-      if (playerList.length > 0) {
-        // let oldScore = playerScore;
-        if (newScore !== 0) {
-          let { updatedPlayerList, player } = updatePlayerListValue();
-          //TODO
-          // setPlayerList((playerList) => {
-          //   // setPlayerScore((oldScore) => newScore);
-          //   let players = playerList;
-          //   let player = playerList.find(
-          //     (p) => p.uuIdentity === UU5.Environment.getSession().getIdentity().getUuIdentity()
-          //   );
-          //   if (!player) {
-          //     return;
-          //   }
-          //   player.score += 10;
-          //
-          //   return players;
-          // });
-
-          const newMessage = {
-            gameId: props.params.id,
-            identifier: "playerUpdate",
-            data: player,
-          };
-
-          console.log(newMessage);
-          Calls.updatePlayerList(newMessage);
-
-          store.dispatch({ type: UPDATE_PLAYER_LIST, playerList: updatedPlayerList });
-        }
+    /**
+     * Process Messages from server and propagate them to the Phaser
+     * @param identifier
+     * @param data
+     */
+    function processMessages(identifier, data) {
+      // console.log(identifier, data);
+      if (identifier === "currentPlayers") {
+        setPlayerList(data);
+      } else if (identifier === "newPlayer") {
+        setPlayerList((playerList) => [...playerList, data]);
+      } else if (identifier === "disconnect") {
+        setPlayerList((playerList) => [...playerList.filter((p) => p.uuIdentity !== data.uuIdentity)]);
       }
+
+      triggerEvent(identifier, data);
     }
+
     //@@viewOff:private
     //@@viewOn:interface
     //@@viewOff:interface
@@ -148,20 +123,12 @@ export const RoomDetail = createVisualComponent({
     return (
       <div {...attrs}>
         <RoomContextResolver id={props.params.id}>
-          {/*<Provider store={store}>*/}
           <PlayersProvider playerList={playerList}>
             <BasicInfo eventSource={eventSourceRef} />
-            <List />
           </PlayersProvider>
-          <div>
-            <div id="game-container">
-              <Game />
-            </div>
-            <div className="content">
-              <Leaderboard updateScore={updateScore} />
-            </div>
+          <div id="game-container">
+            <Game />
           </div>
-          {/*</Provider>*/}
         </RoomContextResolver>
       </div>
     );

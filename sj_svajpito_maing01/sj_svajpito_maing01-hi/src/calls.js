@@ -13,7 +13,6 @@ let Calls = {
     return response.data;
   },
 
-
   instanceLoad(dtoIn) {
     let commandUri = Calls.getCommandUri("instance/load", dtoIn.uri);
     return Calls.call("get", commandUri, dtoIn.data);
@@ -46,14 +45,39 @@ let Calls = {
     let commandUri = Calls.getCommandUri("game/update");
     return Calls.call("post", commandUri, dtoInData);
   },
-  updatePlayerPosition(dtoInData) {
-    let commandUri = Calls.getCommandUri("game/update2");
-    return Calls.call("post", commandUri, dtoInData);
+  updatePlayerPosition(dtoInData, moveNumber) {
+    if (moveNumber.current % 2 === 0 || moveNumber.current < 10) {
+      let commandUri = Calls.getCommandUri("game/update2");
+      return Calls.call("post", commandUri, {
+        identifier: "playerMovement",
+        data: dtoInData,
+      });
+    }
   },
   updateStar(dtoInData) {
     let commandUri = Calls.getCommandUri("game/update2");
-    return Calls.call("post", commandUri, dtoInData);
+    return Calls.call("post", commandUri, {
+      identifier: "starCollected",
+      data: dtoInData,
+    });
   },
+
+  newBullet(dtoInData) {
+    let commandUri = Calls.getCommandUri("game/update2");
+    return Calls.call("post", commandUri, {
+      identifier: "newBullet",
+      data: dtoInData,
+    });
+  },
+
+  playerDead(dtoInData) {
+    let commandUri = Calls.getCommandUri("game/update2");
+    return Calls.call("post", commandUri, {
+      identifier: "playerDead",
+      data: dtoInData,
+    });
+  },
+
   roomCreate(dtoIn) {
     let commandUri = Calls.getCommandUri("room/create", dtoIn.uri);
     return Calls.call("post", commandUri, dtoIn.data);
@@ -67,9 +91,7 @@ let Calls = {
     return Calls.call("get", commandUri, dtoIn.data);
   },
 
-  joinRoom() {
-
-  },
+  joinRoom() {},
 
   async initAndGetWorkspace(dtoInData) {
     await Calls.initWorkspace(dtoInData);

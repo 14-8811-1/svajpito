@@ -15,44 +15,81 @@ class UpdateAbl {
     if (typeof dtoIn.message === "string") {
       dtoIn = JSON.parse(dtoIn.message);
     }
+    console.log(dtoIn.identifier, dtoIn.data);
 
     let uuIdentity = session.getIdentity().getUuIdentity();
-    let gameId = dtoIn.data.gameId;
-    let gameRoom = gameStorage.getGame({ awid, gameId });
-    if (dtoIn.identifier === "playerMovement") {
-      // players[socket.id].x = movementData.x;
-      // players[socket.id].y = movementData.y;
-      // players[socket.id].rotation = movementData.rotation;
-      // // emit a message to all players about the player that moved
-      // socket.broadcast.emit('playerMoved', players[socket.id]);
-      let player = gameRoom.getPlayer(uuIdentity);
-      player.setPosition(dtoIn.data.x, dtoIn.data.y);
-      player.setRotation(dtoIn.data.rotation);
+    let gameRoom = gameStorage.getGame({ awid, gameId: dtoIn.data.gameId });
 
-      gameRoom.sendPlayerUpdate(player, gameId, "playerMoved");
+    let response = {};
+    let player = gameRoom.getPlayer(uuIdentity);
+    if (player.IsAlive()) {
+      if (dtoIn.identifier === "playerMovement") this.processPlayerMovement(player, gameRoom, dtoIn.data, uuIdentity);
+      if (dtoIn.identifier === "starCollected") response = this.processStarCollected(player, gameRoom, uuIdentity);
+      if (dtoIn.identifier === "newBullet") this.processNewBullet(player, gameRoom, dtoIn.data, uuIdentity);
+      if (dtoIn.identifier === "playerDead") this.processPlayerDead(player, gameRoom, dtoIn.data, uuIdentity);
     }
 
-    if (dtoIn.identifier === "starCollected") {
-      let player = gameRoom.getPlayer(uuIdentity);
-      player.increaseScore(10);
+    return { ...response, uuAppErrorMap };
+  }
 
-      let star = gameRoom.getStar();
+  /**
+   * Process player movement
+   * @param player
+   * @param gameRoom
+   * @param data
+   * @param uuIdentity
+   */
+  processPlayerMovement(player, gameRoom, data, uuIdentity) {
+    player.setPosition(data.x, data.y);
+    player.setRotation(data.rotation);
 
-      let x = Math.floor(Math.random() * 700) + 50;
-      let y = Math.floor(Math.random() * 500) + 50;
-      star.setPosition(x, y);
+    gameRoom.sendPlayerUpdate(player, { velocityX: data.velocityX, velocityY: data.velocityY }, gameRoom.getId(), "playerMoved");
+  }
 
-      gameRoom.sendStarUpdate(player, gameId, "starLocation");
+  /**
+   * Process player dead
+   * @param player
+   * @param gameRoom
+   * @param data
+   * @param uuIdentity
+   */
+  processPlayerDead(player, gameRoom, data, uuIdentity) {
+    player.setAlive(false);
+    gameRoom.sendPlayerDead(player, gameRoom.getId(), "playerDied", data);
+  }
 
-      return {
-        identifier: "starLocation",
-        data: gameRoom.getStar().getStarInfo(),
-      }
-        // io.emit('starLocation', star);
-        // io.emit('scoreUpdate', scores);
-    }
+  /**
+   * Process new bullet
+   * @param player
+   * @param gameRoom
+   * @param data
+   * @param uuIdentity
+   */
+  processNewBullet(player, gameRoom, data, uuIdentity) {
+    gameRoom.sendBulletUpdate(player, gameRoom.getId(), "bulletData", data);
+  }
 
-    return { uuAppErrorMap };
+  /**
+   * Process Star collected
+   * @param player
+   * @param gameRoom
+   * @param uuIdentity
+   * @returns {{identifier: string, data: {x: *, y: *}}}
+   */
+  processStarCollected(player, gameRoom, uuIdentity) {
+    player.increaseScore(10);
+
+    let star = gameRoom.getStar();
+    let x = Math.floor(Math.random() * 700) + 50;
+    let y = Math.floor(Math.random() * 500) + 50;
+    star.setPosition(x, y);
+
+    gameRoom.sendStarUpdate(player, gameRoom.getId(), "starLocation");
+
+    return {
+      identifier: "starLocation",
+      data: gameRoom.getStar().getStarInfo(),
+    };
   }
 }
 

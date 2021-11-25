@@ -1,14 +1,16 @@
 import "phaser";
 import * as UU5 from "uu5g04";
-//import Player from "../entity/player";
-//import Ground from "../entity/ground";
-//import store, { UPDATE_SCORE } from "../store";
-//import Firefly from "../entity/firefly";
+import { onEvent, triggerEvent } from "../../common/communication-helper";
+
+import Shot from "../entity/shot";
+import Player from "../entity/player";
+import Enemy from "../entity/enemy";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
   }
+
   preload() {
     //PRELOAD SPRITES
     this.load.image("ship", "assets/spaceShips_001.png");
@@ -19,10 +21,12 @@ export default class MainScene extends Phaser.Scene {
   //CREATE
   create() {
     let self = this;
-    // this.socket = io();
+    this.myBullets = this.physics.add.group();
+    this.othersBullets = this.physics.add.group();
     this.otherPlayers = this.physics.add.group();
 
-    UU5.Environment.EventListener.registerEvent("currentPlayers", UU5.Common.Tools.generateUUID(16), (players) => {
+    // load current players for the new player when he joins the game
+    onEvent("currentPlayers", (players) => {
       let uuIdentity = UU5.Environment.getSession().getIdentity().getUuIdentity();
       console.log(uuIdentity);
       players.forEach(function (player) {
@@ -34,25 +38,17 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
-    // this.socket.on("currentPlayers", function (players) {
-    //   Object.keys(players).forEach(function (id) {
-    //     if (players[id].playerId === self.socket.id) {
-    //       self._addPlayer(self, players[id]);
-    //     } else {
-    //       self._addOtherPlayers(self, players[id]);
-    //     }
-    //   });
-    // });
-    UU5.Environment.EventListener.registerEvent("newPlayer", UU5.Common.Tools.generateUUID(16), (playerInfo) => {
-      console.log("event received", "newPlayer");
+    /**
+     * another player join the game
+     */
+    onEvent("newPlayer", (playerInfo) => {
       self._addOtherPlayers(self, playerInfo);
     });
-    // this.socket.on("newPlayer", function (playerInfo) {
-    //   self._addOtherPlayers(self, playerInfo);
-    // });
 
-    UU5.Environment.EventListener.registerEvent("disconnect", UU5.Common.Tools.generateUUID(16), (playerInfo) => {
-      console.log("event received", "disconnect");
+    /**
+     * some player left the game
+     */
+    onEvent("disconnect", (playerInfo) => {
       self.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
           otherPlayer.destroy();
@@ -60,15 +56,22 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
-    // this.socket.on("disconnect", function (playerId) {
-    //   self.otherPlayers.getChildren().forEach(function (otherPlayer) {
-    //     if (playerId === otherPlayer.playerId) {
-    //       otherPlayer.destroy();
-    //     }
-    //   });
-    // });
-    UU5.Environment.EventListener.registerEvent("playerMoved", UU5.Common.Tools.generateUUID(16), (playerInfo) => {
-      console.log("event received", "playerMoved");
+    /**
+     * some player has died
+     */
+    onEvent("playerDied", (playerInfo) => {
+      self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+        if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
+          console.log("destroy", "");
+          otherPlayer.destroy();
+        }
+      });
+    });
+
+    /**
+     * player changed the position
+     */
+    onEvent("playerMoved", (playerInfo) => {
       self.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
           otherPlayer.setRotation(playerInfo.rotation);
@@ -76,70 +79,66 @@ export default class MainScene extends Phaser.Scene {
         }
       });
     });
-    // this.socket.on("playerMoved", function (playerInfo) {
-    //   self.otherPlayers.getChildren().forEach(function (otherPlayer) {
-    //     if (playerInfo.playerId === otherPlayer.playerId) {
-    //       otherPlayer.setRotation(playerInfo.rotation);
-    //       otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-    //     }
-    //   });
-    // });
 
     this.cursors = this.input.keyboard.createCursorKeys();
-
-    // this.blueScoreText = this.add.text(16, 16, "", { fontSize: "32px", fill: "#0000FF" });
-    // this.redScoreText = this.add.text(584, 16, "", { fontSize: "32px", fill: "#FF0000" });
-
-    // this.socket.on("scoreUpdate", function (scores) {
-    //   self.blueScoreText.setText("Blue: " + scores.blue);
-    //   self.redScoreText.setText("Red: " + scores.red);
-    // });
-
-    //TODO
-    UU5.Environment.EventListener.registerEvent("starLocation", UU5.Common.Tools.generateUUID(16), (starLocation) => {
+    /**
+     * Star location
+     */
+    onEvent("starLocation", (starLocation) => {
+      console.log(`event called starLocation`, starLocation);
       if (self.star) self.star.destroy();
       self.star = self.physics.add.image(starLocation.x, starLocation.y, "star");
       self.physics.add.overlap(
         self.ship,
         self.star,
         function () {
-          UU5.Environment.EventListener.triggerEvent("starCollected");
-          // this.socket.emit("starCollected");
+          self.star.destroy();
+          triggerEvent("starCollected");
+          console.log(`event triggered starLocation`);
         },
         null,
         self
       );
     });
 
-    // this.socket.on("starLocation", function (starLocation) {
-    //   if (self.star) self.star.destroy();
-    //   self.star = self.physics.add.image(starLocation.x, starLocation.y, "star");
-    //   self.physics.add.overlap(
-    //     self.ship,
-    //     self.star,
-    //     function () {
-    //       this.socket.emit("starCollected");
-    //     },
-    //     null,
-    //     self
-    //   );
-    // });
+    /**
+     * Shot on button press
+     */
+    this.input.keyboard.on("keydown-F", () => {
+      let args = { x: this.ship.x, y: this.ship.y, angle: this.ship.rotation };
+
+      new Shot(this, ...Object.values(args), true);
+      triggerEvent("newBullet", args);
+    });
+
+    /**
+     * Show bullet from someone else
+     */
+    onEvent("bulletData", (bulletData) => {
+      new Shot(this, ...Object.values(bulletData));
+    });
   }
+
   update() {
     //call player update
     if (this.ship) {
+      let angle = 0.5 * Math.PI;
+      let velocity = 1600;
+      // vertical movement
       if (this.cursors.left.isDown) {
-        this.ship.setAngularVelocity(-150);
+        this.ship.setRotation(angle);
+        this.ship.setVelocity(-velocity, 0);
       } else if (this.cursors.right.isDown) {
-        this.ship.setAngularVelocity(150);
-      } else {
-        this.ship.setAngularVelocity(0);
+        this.ship.setRotation(-angle);
+        this.ship.setVelocity(velocity, 0);
       }
-
-      if (this.cursors.up.isDown) {
-        this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
-      } else {
-        this.ship.setAcceleration(0);
+      // horizontal movement
+      if (this.cursors.down.isDown) {
+        this.ship.setRotation(0);
+        this.ship.setVelocity(0, velocity);
+      } else if (this.cursors.up.isDown) {
+        this.ship.setRotation(-2 * angle);
+        this.ship.setVelocity(0, -velocity);
       }
 
       this.physics.world.wrap(this.ship, 5);
@@ -152,8 +151,7 @@ export default class MainScene extends Phaser.Scene {
         this.ship.oldPosition &&
         (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y || r !== this.ship.oldPosition.rotation)
       ) {
-        // this.socket.emit("playerMovement", { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
-        UU5.Environment.EventListener.triggerEvent("playerMovement", {
+        triggerEvent("playerMovement", {
           x: this.ship.x,
           y: this.ship.y,
           rotation: this.ship.rotation,
@@ -168,29 +166,24 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Add player Sprite to Scene
+   * @param self
+   * @param playerInfo
+   * @private
+   */
   _addPlayer(self, playerInfo) {
-    self.ship = self.physics.add.image(playerInfo.x, playerInfo.y, "ship").setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-    if (playerInfo.team === "blue") {
-      self.ship.setTint(0x0000ff);
-    } else {
-      self.ship.setTint(0xff0000);
-    }
-    self.ship.setDrag(100);
-    self.ship.setAngularDrag(100);
-    self.ship.setMaxVelocity(200);
+    self.ship = new Player(this, playerInfo.x, playerInfo.y, "ship", playerInfo);
   }
 
+  /**
+   * Add other player Sprite to Scene
+   * @param self
+   * @param playerInfo
+   * @private
+   */
   _addOtherPlayers(self, playerInfo) {
-    const otherPlayer = self.add
-      .sprite(playerInfo.x, playerInfo.y, "otherPlayer")
-      .setOrigin(0.5, 0.5)
-      .setDisplaySize(53, 40);
-    if (playerInfo.team === "blue") {
-      otherPlayer.setTint(0x0000ff);
-    } else {
-      otherPlayer.setTint(0xff0000);
-    }
-    otherPlayer.uuIdentity = playerInfo.uuIdentity;
+    let otherPlayer = new Enemy(this, playerInfo.x, playerInfo.y, "otherPlayer", playerInfo);
     self.otherPlayers.add(otherPlayer);
   }
 }

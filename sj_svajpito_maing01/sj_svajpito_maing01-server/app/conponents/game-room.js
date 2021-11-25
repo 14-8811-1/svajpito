@@ -1,5 +1,6 @@
 const Player = require("./player");
 const Star = require("./star");
+const Bullet = require("./bullet");
 
 class GameRoom {
   constructor(id) {
@@ -22,7 +23,6 @@ class GameRoom {
       player = new Player({ name, uuIdentity, client, position });
       this._players.push(player);
 
-      // this._sendPlayerList(player);
       this.sendPlayerUpdate(player, this._id, "playerAdd");
     }
 
@@ -38,12 +38,9 @@ class GameRoom {
   }
 
   removePlayer(uuIdentity) {
-    // console.log("remove", uuIdentity, this._id);
     let player = this.getPlayer(uuIdentity);
     this._players = this._players.filter((p) => uuIdentity !== p.getUuIdentity());
 
-    //this._sendPlayerList(player, this._id);
-    // this.sendPlayerUpdate(player, this._id, "playerDelete");
     return player;
   }
 
@@ -52,39 +49,34 @@ class GameRoom {
   }
 
   updatePlayerListScore(playerData, uuIdentity) {
-    // console.log(playerList);
-    // this._players.forEach((player) => {
     let player = this._players.find((p) => p.getUuIdentity() === playerData.uuIdentity);
     if (player) {
       player.setScore(playerData.score);
     }
-    // });
 
-    // let skipPlayer = player // this.getPlayer(uuIdentity);
-    // this._sendPlayerList(skipPlayer, this._id);
     this.sendPlayerUpdate(player, this._id, "playerUpdate");
   }
 
-  sendPlayerUpdate(skipPlayer, gameId, identifier) {
+  sendPlayerUpdate(skipPlayer, { velocityX, velocityY }, gameId, identifier) {
     let playerInfo = skipPlayer && skipPlayer.getPlayerInfo();
     if (playerInfo) {
-      this._informPlayers(
-        playerInfo,
-        gameId || this._id,
-        skipPlayer,
-        identifier
-      );
+      playerInfo = { ...playerInfo, ...(velocityX != undefined && { velocityX }), ...(velocityY != undefined && { velocityY }) };
+      this._informPlayers(playerInfo, gameId || this._id, skipPlayer, identifier);
     }
   }
 
   sendStarUpdate(skipPlayer, gameId, identifier) {
     let starInfo = this._start.getStarInfo();
-      this._informPlayers(
-        starInfo,
-        gameId || this._id,
-        skipPlayer,
-        identifier
-      );
+    this._informPlayers(starInfo, gameId || this._id, skipPlayer, identifier);
+  }
+
+  sendBulletUpdate(skipPlayer, gameId, identifier, bulletData) {
+    let bullet = new Bullet(bulletData);
+    this._informPlayers(bullet.getBulletInfo(), gameId || this._id, skipPlayer, identifier);
+  }
+
+  sendPlayerDead(skipPlayer, gameId, identifier) {
+    this._informPlayers(skipPlayer.getPlayerInfo(), gameId || this._id, skipPlayer, identifier);
   }
 
   _sendPlayerList(skipPlayer, gameId) {
@@ -97,10 +89,9 @@ class GameRoom {
 
   _informPlayers(data, gameId, skipPlayer, identifier) {
     let players = this._players;
-    if (skipPlayer instanceof Player) {
-      players = this._players.filter((p) => p.getUuIdentity() !== skipPlayer.getUuIdentity());
-    }
+
     players.forEach((player) => {
+      if (skipPlayer instanceof Player && player.getUuIdentity() === skipPlayer.getUuIdentity()) return;
       player.inform(identifier, gameId, data);
     });
   }
