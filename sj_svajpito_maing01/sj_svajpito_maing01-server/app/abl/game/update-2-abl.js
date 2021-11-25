@@ -41,6 +41,7 @@ class UpdateAbl {
    */
   processPlayerMovement(player, gameRoom, data, uuIdentity) {
     player.setPosition(data.x, data.y);
+    player.setVelocity(data.velocityX, data.velocityY);
     player.setRotation(data.rotation);
 
     gameRoom.sendPlayerUpdate(player, { velocityX: data.velocityX, velocityY: data.velocityY }, gameRoom.getId(), "playerMoved");

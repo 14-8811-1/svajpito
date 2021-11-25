@@ -114,11 +114,8 @@ export default class MainScene extends Phaser.Scene {
       // console.log("update1", playerInfo, self.otherPlayers.getChildren());
       self.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
-          // otherPlayer.setRotation(playerInfo.rotation);
-          console.log("update2", playerInfo);
-          // playerInfo.velocityX !== undefined && otherPlayer.setVelocityX(playerInfo.velocityX);
-          // playerInfo.velocityY !== undefined && otherPlayer.setVelocityY(playerInfo.velocityY);
-          otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+          //console.log("update2", {x: playerInfo.x, y: playerInfo.y, vX: playerInfo.velocityX, vY: playerInfo.velocityY,});
+          otherPlayer.updatePlayerInfo(playerInfo);
         }
       });
     });
@@ -232,7 +229,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   addOtherPlayers(playerInfo) {
-    console.log("hereee", playerInfo);
     let otherPlayer = new Enemy(this, playerInfo.x, playerInfo.y, "newt", playerInfo).setScale(0.5);
     this.physics.add.collider(otherPlayer, this.groundGroup);
     // otherPlayer.setBounce(0.2);
@@ -250,10 +246,11 @@ export default class MainScene extends Phaser.Scene {
   //   firefly.update(this.twinkle);
   // }
 
-  update() {
+  update(time, delta) {
     //call player update
     if (this.player) {
       this.player.update(this.cursors, this.jumpSound);
     }
+    //this.otherPlayers.getChildren().forEach(otherPlayer => otherPlayer.update(time, delta))
   }
 }

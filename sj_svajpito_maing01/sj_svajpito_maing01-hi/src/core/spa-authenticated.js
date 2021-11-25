@@ -26,7 +26,6 @@ const STATICS = {
 const About = UU5.Common.Component.lazy(() => import("../routes/about"));
 const Rooms = UU5.Common.Component.lazy(() => import("../routes/rooms"));
 const RoomDetail = UU5.Common.Component.lazy(() => import("../routes/room-detail"));
-const RoomDetail2 = UU5.Common.Component.lazy(() => import("../routes/room-detail-2"));
 const InitAppWorkspace = UU5.Common.Component.lazy(() => import("../routes/init-app-workspace"));
 const ControlPanel = UU5.Common.Component.lazy(() => import("../routes/control-panel"));
 
@@ -37,7 +36,6 @@ const ROUTES = {
   about: { component: <About /> },
   rooms: { component: <Rooms /> },
   roomdetail: { component: <RoomDetail /> },
-  roomdetail2: { component: <RoomDetail2 /> },
   "sys/uuAppWorkspace/initUve": { component: <InitAppWorkspace /> },
   controlPanel: { component: <ControlPanel /> },
 };
