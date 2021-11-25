@@ -18,6 +18,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.velocityY = 0;
     this.x = playerInfo.x;
     this.y = playerInfo.y;
+    this.setPushable(false);
 
     this.uuIdentity = playerInfo.uuIdentity;
     this.isAlive = true;
@@ -52,13 +53,12 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         if (this.health === 0) {
           this.die(bullet.uuIdentity);
-          this.scene.gameOver();
         }
 
-      if (this.health === 0) {
-        this.die(bullet.uuIdentity);
+        if (this.health === 0) {
+          this.die(bullet.uuIdentity);
+        }
       }
-    }
     });
 
     this.depth = 0;
