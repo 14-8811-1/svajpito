@@ -9,6 +9,7 @@ import { onEvent, triggerEvent } from "../../common/communication-helper";
 import Shot from "../../game/entity/shot";
 import Score from "../overlay/score";
 import AlertText from "../overlay/alert";
+import Timer from "../overlay/timer";
 
 const AUDIO_FILES = {
   death: ["assets/audio/death/death1.wav", "assets/audio/death/death2.wav"],
@@ -61,8 +62,6 @@ export default class MainScene extends Phaser.Scene {
     // this.load.image("firefly", "assets/sprites/firefly.png");
   }
 
-  playRandom(identifier) {}
-
   //ANIMATIONS HELPER FUNC
   createAnimations() {
     this.anims.create({
@@ -105,6 +104,7 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
     this.myBullets = this.physics.add.group();
     this.othersBullets = this.physics.add.group();
+    this.gameRoom = { state: "unloaded" };
 
     this.sounds = {};
     const prepareSound = (identifier, paths) => {
@@ -141,6 +141,10 @@ export default class MainScene extends Phaser.Scene {
           self.addOtherPlayers(player);
         }
       });
+      delete data.players;
+      this.gameRoom = data;
+      this.timer.setTime(this.gameRoom.time);
+      console.log("initialGameState prepped", this.gameRoom);
     });
 
     /**
@@ -195,6 +199,7 @@ export default class MainScene extends Phaser.Scene {
     onEvent("playerDied", (playerInfo) => {
       self.otherPlayers.getChildren().forEach((otherPlayer) => {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
+          this.sounds.death.play({ volume: 0.2 });
           console.log("destroy", otherPlayer.uuIdentity);
           otherPlayer.destroy();
           console.log({
@@ -203,6 +208,7 @@ export default class MainScene extends Phaser.Scene {
             me: this.player.uuIdentity,
           });
           if (playerInfo.killerUuIdentity === this.player.uuIdentity) {
+            this.sounds.woohoo.play();
             this.score.increment();
           }
         }
@@ -261,7 +267,24 @@ export default class MainScene extends Phaser.Scene {
       } else if (activation.power === "cantMove") {
         this.player.cantMove();
       this.alertText.update("you cant move");
+      }
+    });
 
+    /*
+     * Game progress
+     */
+    onEvent("gameTick", (gameInfo) => {
+      this.gameRoom = { ...this.gameRoom, ...gameInfo };
+      console.log("gameTick", this.gameRoom);
+      this.timer.setTime(gameInfo.time <= 0 ? gameInfo.time : gameInfo.limit - gameInfo.time);
+      switch (this.gameRoom.state) {
+        case "starting":
+          if (this.gameRoom.time === -6) {
+            this.sounds.countdown.play();
+          }
+          break;
+        case "counted":
+          UU5.Environment.setRoute("score");
       }
     });
 
@@ -269,6 +292,8 @@ export default class MainScene extends Phaser.Scene {
      * Shot on button press
      */
     this.input.keyboard.on("keydown-F", () => {
+      if (this.gameRoom.state !== "running") return;
+      if (!this.player.isAlive) return;
       let args = { x: this.player.x, y: this.player.y, angle: this.player.rotation };
 
       new Shot(this, ...Object.values(args), true);
@@ -278,6 +303,7 @@ export default class MainScene extends Phaser.Scene {
     this.input.on(
       "pointerdown",
       (pointer) => {
+        if (this.gameRoom.state !== "running") return;
         if (!this.player.isAlive) return;
         let cursor = pointer;
         let angle = Phaser.Math.Angle.Between(
@@ -349,10 +375,10 @@ export default class MainScene extends Phaser.Scene {
     //launch OpeningScene
     // this.scene.launch("OpeningScene");
     this.scene.launch("MainScene");
-    // this.sounds.music.play();
-
     this.score = new Score(this, 0);
     this.alertText = new AlertText(this, "");
+    this.timer = new Timer(this, 0);
+    this.sounds.music.play();
   }
 
   addPlayer(playerInfo) {
