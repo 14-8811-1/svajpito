@@ -455,6 +455,9 @@ export default class MainScene extends Phaser.Scene {
     if (this.player) {
       this.player.update(this.cursors, this.sounds.jump);
     }
+    if (this.timer) {
+      this.timer.draw();
+    }
     this.otherPlayers.getChildren().forEach((otherPlayer) => otherPlayer.update());
   }
 
