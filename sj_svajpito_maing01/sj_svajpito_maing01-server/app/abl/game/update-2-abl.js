@@ -2,6 +2,7 @@
 
 const gameStorage = require("../../conponents/game-storage");
 const Errors = require("../../api/errors/game-error").Update;
+const SCORE_LIMIT = 10;
 
 class UpdateAbl {
   async update(uri, dtoIn, session, uuAppErrorMap = {}) {
@@ -61,6 +62,9 @@ class UpdateAbl {
     const killer = gameRoom.getPlayer(data.killerUuIdentity);
     killer.increaseScore(1);
     gameRoom.sendPlayerDead(player, gameRoom.getId(), "playerDied", data);
+    if (killer.getScore() >= SCORE_LIMIT) {
+      gameRoom.stop();
+    }
   }
 
   /**
