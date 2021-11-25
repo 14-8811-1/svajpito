@@ -13,4 +13,9 @@ export default class Score {
   update(score) {
     this.scoreText.setText("Score: " + score);
   }
+
+  increment() {
+    this.score += 1;
+    this.update(this.score);
+  }
 }

@@ -60,7 +60,11 @@ class GameRoom {
   sendPlayerUpdate(skipPlayer, { velocityX, velocityY }, gameId, identifier) {
     let playerInfo = skipPlayer && skipPlayer.getPlayerInfo();
     if (playerInfo) {
-      playerInfo = { ...playerInfo, ...(velocityX != undefined && { velocityX }), ...(velocityY != undefined && { velocityY }) };
+      playerInfo = {
+        ...playerInfo,
+        ...(velocityX != undefined && { velocityX }),
+        ...(velocityY != undefined && { velocityY }),
+      };
       this._informPlayers(playerInfo, gameId || this._id, skipPlayer, identifier);
     }
   }
@@ -71,12 +75,12 @@ class GameRoom {
   }
 
   sendBulletUpdate(skipPlayer, gameId, identifier, bulletData) {
-    let bullet = new Bullet(bulletData, skipPlayer);
+    let bullet = new Bullet(bulletData, skipPlayer.getUuIdentity());
     this._informPlayers(bullet.getBulletInfo(), gameId || this._id, skipPlayer, identifier);
   }
 
-  sendPlayerDead(skipPlayer, gameId, identifier) {
-    this._informPlayers(skipPlayer.getPlayerInfo(), gameId || this._id, skipPlayer, identifier);
+  sendPlayerDead(skipPlayer, gameId, identifier, data) {
+    this._informPlayers({ ...skipPlayer.getPlayerInfo(), ...data }, gameId || this._id, skipPlayer, identifier);
   }
 
   sendPlayerHit(skipPlayer, gameId, identifier, data) {

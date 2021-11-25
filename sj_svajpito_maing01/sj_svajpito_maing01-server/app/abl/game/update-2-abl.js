@@ -54,8 +54,10 @@ class UpdateAbl {
    * @param data
    * @param uuIdentity
    */
-  processPlayerDead(player, gameRoom, data, uuIdentity) {
+  processPlayerDead(player, gameRoom, data, _uuIdentity) {
     player.setAlive(false);
+    const killer = gameRoom.getPlayer(data.killerUuIdentity);
+    killer.increaseScore(1);
     gameRoom.sendPlayerDead(player, gameRoom.getId(), "playerDied", data);
   }
 

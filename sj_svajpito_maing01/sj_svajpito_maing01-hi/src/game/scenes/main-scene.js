@@ -127,10 +127,14 @@ export default class MainScene extends Phaser.Scene {
      * some player has died
      */
     onEvent("playerDied", (playerInfo) => {
-      self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+      self.otherPlayers.getChildren().forEach((otherPlayer) => {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
-          console.log("destroy", "");
+          console.log("destroy", otherPlayer.uuIdentity);
           otherPlayer.destroy();
+          console.log({ dead: otherPlayer.uuIdentity, killer: playerInfo.killerUuIdentity, me: this.player.uuIdentity });
+          if (playerInfo.killerUuIdentity === this.player.uuIdentity) {
+            this.score.increment();
+          }
         }
       });
     });
@@ -142,7 +146,7 @@ export default class MainScene extends Phaser.Scene {
           otherPlayer.setHealth(playerInfo.health);
         }
       });
-    })
+    });
 
     /**
      * Shot on button press
@@ -156,7 +160,8 @@ export default class MainScene extends Phaser.Scene {
 
     this.input.on(
       "pointerdown",
-      function (pointer) {
+      (pointer) => {
+        if (!this.player.isAlive) return;
         let cursor = pointer;
         let angle = Phaser.Math.Angle.Between(
           this.player.x,
@@ -177,7 +182,8 @@ export default class MainScene extends Phaser.Scene {
      * Show bullet from someone else
      */
     onEvent("bulletData", (bulletData) => {
-      new Shot(this, ...Object.values(bulletData));
+      console.log("bulletData", bulletData);
+      new Shot(this, bulletData.x, bulletData.y, bulletData.angle, false, bulletData.uuIdentity);
     });
 
     //set up world bounds
@@ -269,5 +275,9 @@ export default class MainScene extends Phaser.Scene {
     if (this.player) {
       this.player.update(this.cursors, this.jumpSound);
     }
+  }
+
+  gameOver() {
+    
   }
 }

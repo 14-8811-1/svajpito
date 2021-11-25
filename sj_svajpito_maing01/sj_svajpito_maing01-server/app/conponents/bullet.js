@@ -1,5 +1,5 @@
 class Bullet {
-  constructor({ x, y, angle }, { uuIdentity }) {
+  constructor({ x, y, angle }, uuIdentity) {
     this._x = x;
     this._y = y;
     this._angle = angle;

@@ -22,7 +22,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.collider(this, scene.othersBullets, (player, bullet) => {
       bullet.destroy();
 
-      if (!this.isAlive) return;
+      if (!this.isAlive) {
+        console.log("Dead and shot?");
+        return;
+      }
 
       const damage = bullet.damage ?? HEALTH_DECREASE;
 
@@ -33,7 +36,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       triggerEvent("playerShot", { shooterUuIdentity: bullet.uuIdentity, damage });
 
       if (this.health === 0) {
-        this.die();
+        this.die(bullet.uuIdentity);
+        this.scene.gameOver();
       }
 
       return false;
