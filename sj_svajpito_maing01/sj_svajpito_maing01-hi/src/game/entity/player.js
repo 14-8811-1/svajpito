@@ -14,6 +14,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
+    this.velocityX = 0;
+    this.velocityY = 0;
 
     this.uuIdentity = playerInfo.uuIdentity;
     this.isAlive = true;
@@ -69,16 +71,19 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // Move left
     if (cursors.left.isDown) {
       this.setVelocityX(-360);
+      this.velocityX = -360;
       if (this.body.touching.down) this.play("left", true);
     }
     // Move right
     else if (cursors.right.isDown) {
       this.setVelocityX(360);
+      this.velocityX = 360;
       if (this.body.touching.down) this.play("right", true);
     }
     // Neutral (no movement)
     else {
       this.setVelocityX(0);
+      this.velocityX = 0;
       this.play("turn", true);
     }
   }
@@ -87,6 +92,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     if (cursors.up.isDown && this.body.touching.down) {
       jumpSound.play();
       this.setVelocityY(-800);
+      this.velocityY = -800;
+    } else if (this.body.touching.down) {
+      this.velocityY = 0;
     }
   }
 
@@ -95,13 +103,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.updateMovement(cursors);
       this.updateJump(cursors, jumpSound);
     }
+
     if (this.previousPosition.x) {
       if (
-        Math.abs(this.x - this.previousPosition.x) > 0 ||
-        Math.abs(this.y - this.previousPosition.y) > 0 ||
-        Math.abs(this.setVelocityX - this.previousPosition.velocityX) > 0
+        Math.abs(this.velocityY - this.previousPosition.velocityY) > 0 ||
+        Math.abs(this.velocityX - this.previousPosition.velocityX) > 0
       ) {
         //console.log(this.x, this.y, "trigger moved");
+        console.log(this.velocityX, this.velocityY);
         triggerEvent("playerMovement", {
           x: this.x,
           y: this.y,

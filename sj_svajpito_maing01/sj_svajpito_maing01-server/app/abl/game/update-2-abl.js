@@ -45,7 +45,7 @@ class UpdateAbl {
     player.setVelocity(data.velocityX, data.velocityY);
     player.setRotation(data.rotation);
 
-    gameRoom.sendPlayerUpdate(player, { velocityX: data.velocityX, velocityY: data.velocityY }, gameRoom.getId(), "playerMoved");
+    gameRoom.sendPlayerUpdate(player, gameRoom.getId(), "playerMoved");
   }
 
   /**
@@ -63,10 +63,10 @@ class UpdateAbl {
   }
 
   /**
-   * 
-   * @param player 
-   * @param gameRoom 
-   * @param data 
+   *
+   * @param player
+   * @param gameRoom
+   * @param data
    */
   processPlayerShot(player, gameRoom, data, _uuIdentity) {
     player.setHealth(player.getHealth() - data.damage);

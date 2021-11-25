@@ -57,14 +57,9 @@ class GameRoom {
     this.sendPlayerUpdate(player, this._id, "playerUpdate");
   }
 
-  sendPlayerUpdate(skipPlayer, { velocityX, velocityY }, gameId, identifier) {
+  sendPlayerUpdate(skipPlayer, gameId, identifier) {
     let playerInfo = skipPlayer && skipPlayer.getPlayerInfo();
     if (playerInfo) {
-      playerInfo = {
-        ...playerInfo,
-        ...(velocityX != undefined && { velocityX }),
-        ...(velocityY != undefined && { velocityY }),
-      };
       this._informPlayers(playerInfo, gameId || this._id, skipPlayer, identifier);
     }
   }

@@ -13,6 +13,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
     this.setPushable(false);
+    this.velocityX = 0;
+    this.velocityY = 0;
 
     //this.positionBuffer = [];
     //this.interpolationPos = [];
@@ -51,6 +53,13 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     super.destroy();
   }
 
+  setVelocity(x, y) {
+    this.velocityX = x;
+    this.velocityY = y;
+    this.setVelocityX(x);
+    this.setVelocityY(y);
+  }
+
   updatePlayerInfo({ x, y, velocityX, velocityY }) {
     this.setPosition(x || this.x, y || this.y);
 
@@ -69,8 +78,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.anims.play("turn", true);
     }
 
-    //this.setVelocityX(velocityX || 0);
-    //this.setVelocityY(velocityY || 0);
+    this.setVelocity(velocityX || 0, velocityY || 0);
   }
 
   /*
