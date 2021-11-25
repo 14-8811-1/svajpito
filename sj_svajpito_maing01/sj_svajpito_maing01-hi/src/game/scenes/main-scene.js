@@ -129,8 +129,9 @@ export default class MainScene extends Phaser.Scene {
      * load current players for the new player when he joins the game
      */
     onEvent("currentPlayers", (players) => {
+      console.log({ players });
       let uuIdentity = UU5.Environment.getSession().getIdentity().getUuIdentity();
-      console.log(uuIdentity);
+      //console.log(uuIdentity);
       players.forEach(function (player) {
         if (player.uuIdentity === uuIdentity) {
           self.addPlayer(player);
@@ -310,7 +311,7 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers.add(otherPlayer);
   }
 
-  // //COLLECT FIREFLY HELPER FUNC
+  // COLLECT FIREFLY HELPER FUNC
   // collectFirefly(player, firefly) {
   //   firefly.disableBody(true, true);
   //   this.score += 10;
@@ -323,7 +324,7 @@ export default class MainScene extends Phaser.Scene {
     if (this.player) {
       this.player.update(this.cursors, this.sounds.jump);
     }
-    //this.otherPlayers.getChildren().forEach(otherPlayer => otherPlayer.update(time, delta))
+    this.otherPlayers.getChildren().forEach((otherPlayer) => otherPlayer.update());
   }
 
   gameOver() {}

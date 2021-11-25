@@ -44,7 +44,7 @@ export const RoomDetail = createVisualComponent({
 
         const session = UU5.Environment.getSession().getCallToken();
         const eventSource = new EventSource(
-          `${Calls.getCommandUri("room/join2")}?roomId=${props.params.id}&access_token=${session.token}`
+          `${Calls.getCommandUri("room/join")}?roomId=${props.params.id}&access_token=${session.token}`
         );
 
         eventSourceRef.current = eventSource;
@@ -128,9 +128,7 @@ export const RoomDetail = createVisualComponent({
     return (
       <div {...attrs}>
         <RoomContextResolver id={props.params.id}>
-          <PlayersProvider playerList={playerList}>
-
-          </PlayersProvider>
+          <PlayersProvider playerList={playerList}></PlayersProvider>
           <div id="game-container">
             <Game />
           </div>

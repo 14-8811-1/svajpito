@@ -16,6 +16,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.world.enable(this);
     this.velocityX = 0;
     this.velocityY = 0;
+    this.x = playerInfo.x;
+    this.y = playerInfo.y;
 
     this.uuIdentity = playerInfo.uuIdentity;
     this.isAlive = true;
@@ -129,6 +131,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
     this.previousPosition = { x: this.x, y: this.y, velocityY: this.velocityY, velocityX: this.velocityX };
     this.healthBar.setPos(this.x + HEALTH_BAR_OFFSET_X, this.y + HEALTH_BAR_OFFSET_Y);
+
     // console.log(this);
     // console.log("a");
     // debugger;
