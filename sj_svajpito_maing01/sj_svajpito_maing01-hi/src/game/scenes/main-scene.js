@@ -13,12 +13,12 @@ import Timer from "../overlay/timer";
 
 const AUDIO_FILES = {
   death: [
-    "assets/audio/death/death1.wav", 
+    "assets/audio/death/death1.wav",
     "assets/audio/death/death2.wav",
     "assets/audio/death/death3.mp3",
     "assets/audio/death/death4.mp3",
     "assets/audio/death/death5.mp3",
-],
+  ],
   jump: [
     "assets/audio/jump/jump1.wav",
     "assets/audio/jump/jump2.mp3",
@@ -48,7 +48,7 @@ export default class MainScene extends Phaser.Scene {
   }
   preload() {
     //PRELOAD SPRITES
-    this.load.image("woods", "./assets/backgrounds/woods.png");
+    this.load.image("bg", "./assets/backgrounds/bg.jpg");
     this.load.image("star", "assets/star_gold.png");
     this.load.image("orb", "assets/orb.png");
     this.load.spritesheet("newt", "assets/spriteSheets/newt.png", {
@@ -345,10 +345,11 @@ export default class MainScene extends Phaser.Scene {
     });
 
     //set up world bounds
-    this.physics.world.setBounds(0, 0, 800, 600);
+    this.physics.world.setBounds(0, 0, 1900, 1000);
 
     //background
-    this.add.image(-160, 0, "woods").setOrigin(0).setScale(0.5);
+    this.add.image(0, 0, "bg").setOrigin(0, 0);
+    //this.cameras.main.setBounds(0, 0, 600, 400);
 
     this.createAnimations();
 
@@ -358,13 +359,36 @@ export default class MainScene extends Phaser.Scene {
     //platforms
     this.groundGroup = this.physics.add.staticGroup({ classType: Ground });
 
-    this.groundGroup.create(160, 100, "ground");
-    this.groundGroup.create(250, 350, "ground");
-    this.groundGroup.create(530, 200, "ground");
-    this.groundGroup.create(600, 510, "ground");
+    this.groundGroup.create(100, 100, "ground");
+    this.groundGroup.create(130, 410, "ground");
+    this.groundGroup.create(145, 850, "ground");
+
+    this.groundGroup.create(380, 250, "ground");
+    this.groundGroup.create(350, 540, "ground");
+    this.groundGroup.create(320, 720, "ground");
+
+    this.groundGroup.create(610, 250, "ground");
+    this.groundGroup.create(600, 540, "ground");
+    this.groundGroup.create(590, 740, "ground");
+
+    this.groundGroup.create(780, 100, "ground");
+    this.groundGroup.create(750, 410, "ground");
+    this.groundGroup.create(720, 870, "ground");
+
+    this.groundGroup.create(1610, 250, "ground");
+    this.groundGroup.create(1360, 540, "ground");
+    this.groundGroup.create(1590, 740, "ground");
+
+    this.groundGroup.create(1180, 100, "ground");
+    this.groundGroup.create(1150, 410, "ground");
+    this.groundGroup.create(1120, 870, "ground");
+
+    this.groundGroup.create(1780, 100, "ground");
+    this.groundGroup.create(1250, 410, "ground");
+    this.groundGroup.create(1720, 860, "ground");
 
     //floor
-    this.groundGroup.create(160, 620, "mainGround");
+    this.groundGroup.create(160, 1020, "mainGround");
 
     //fireflies
     // this.fireflies = this.physics.add.group({ classType: Firefly });
@@ -402,6 +426,8 @@ export default class MainScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.groundGroup);
 
+    this.cameras.main.setBounds(0, 0, 1900, 1000);
+    this.cameras.main.startFollow(this.player);
     // set score from playerInfo
     this.score.update(playerInfo.score);
   }

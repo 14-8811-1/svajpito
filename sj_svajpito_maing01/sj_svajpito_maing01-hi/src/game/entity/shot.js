@@ -9,7 +9,7 @@ export default class Shot extends Phaser.Physics.Arcade.Sprite {
 
     this.setAngle(angle);
     this.setScale(0.1);
-    this.setTint(0xff0000);
+    this.setTint(0x00fff0);
     this.setCollideWorldBounds(true);
     this.bullet_speed = 800;
     if (isMyBullet) {

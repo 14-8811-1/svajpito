@@ -31,7 +31,7 @@ export const Game = UU5.Common.Component.memo(
       useEffect(() => {
         config.current = {
           type: Phaser.AUTO,
-          width: 800,
+          width: 900,
           height: 600,
           physics: {
             default: "arcade",
@@ -58,7 +58,7 @@ export const Game = UU5.Common.Component.memo(
       //@@viewOn:render
       const attrs = UU5.Common.VisualComponent.getAttrs(props);
       return (
-        <div {...attrs} >
+        <div {...attrs}>
           <div id="phaser-game" />
         </div>
       );
