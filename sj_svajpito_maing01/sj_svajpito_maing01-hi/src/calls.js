@@ -46,13 +46,11 @@ let Calls = {
     return Calls.call("post", commandUri, dtoInData);
   },
   updatePlayerPosition(dtoInData, moveNumber) {
-    if (moveNumber.current % 2 === 0 || moveNumber.current < 10) {
-      let commandUri = Calls.getCommandUri("game/update2");
-      return Calls.call("post", commandUri, {
-        identifier: "playerMovement",
-        data: dtoInData,
-      });
-    }
+    let commandUri = Calls.getCommandUri("game/update2");
+    return Calls.call("post", commandUri, {
+      identifier: "playerMovement",
+      data: dtoInData,
+    });
   },
   updateStar(dtoInData) {
     let commandUri = Calls.getCommandUri("game/update2");
