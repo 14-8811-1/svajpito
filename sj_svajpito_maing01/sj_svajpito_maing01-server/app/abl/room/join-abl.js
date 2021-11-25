@@ -2,22 +2,10 @@
 
 const GameRoom = require("../../conponents/game-room");
 const gameStorage = require("../../conponents/game-storage");
-
-const spawnPoints = [
-  [50, 100],
-  [80, 10],
-  [110, 200],
-];
-const spawnPointRange = 100;
+const pickSpawnPoint = require("../../helpers/spawner");
 
 class JoinAbl {
   constructor() {}
-
-  pickSpawnPoint() {
-    let spawnPoint = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
-    spawnPoint[0] += Math.floor(Math.random() * (spawnPointRange + 1)) - spawnPointRange / 2;
-    return { x: spawnPoint[0], y: spawnPoint[1] };
-  }
 
   async join(uri, dtoIn, response, session, uuAppErrorMap = {}) {
     let awid = uri.getAwid();
@@ -31,7 +19,7 @@ class JoinAbl {
       name,
       uuIdentity,
       client: response,
-      ...this.pickSpawnPoint(),
+      ...pickSpawnPoint(),
     });
 
     gameRoom.sendPlayerUpdate(player, roomId, "newPlayer");

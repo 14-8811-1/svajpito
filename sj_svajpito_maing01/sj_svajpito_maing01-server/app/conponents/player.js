@@ -22,6 +22,19 @@ class Player {
     this._health = 100;
   }
 
+  reset({ position = {}, rotation }) {
+    this._isAlive = true;
+    this._state = STATES.READY;
+    this._x = position.x || Math.floor(Math.random() * 700) + 50;
+    this._y = position.y || Math.floor(Math.random() * 500) + 50;
+    this._velocityX = 0;
+    this._velocityY = 0;
+    this._team = Math.floor(Math.random() * 2) === 0 ? "red" : "blue";
+    this._color = Math.floor(Math.random() * 16777215).toString(16);
+    this._rotation = rotation;
+    this._health = 100;
+  }
+
   setPosition(x, y) {
     this._x = x;
     this._y = y;

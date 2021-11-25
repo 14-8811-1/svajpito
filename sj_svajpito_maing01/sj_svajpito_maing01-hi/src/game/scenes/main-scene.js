@@ -111,8 +111,7 @@ export default class MainScene extends Phaser.Scene {
         this.sounds[`${identifier}_${idx}`] = snd;
       });
       this.sounds[identifier] = {
-        play: () => 
-          this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`].play(...arguments),
+        play: () => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`].play(...arguments),
         pick: () => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`],
       };
     };
@@ -139,6 +138,20 @@ export default class MainScene extends Phaser.Scene {
           self.addOtherPlayers(player);
         }
       });
+    });
+
+    /**
+     *  new player location when he respawns
+     */
+    onEvent("respawn", (player) => {
+      let uuIdentity = UU5.Environment.getSession().getIdentity().getUuIdentity();
+      //console.log(uuIdentity);
+      console.log({ player });
+      if (player.uuIdentity === uuIdentity) {
+        self.addPlayer(player);
+      } else {
+        self.addOtherPlayers(player);
+      }
     });
 
     /**
