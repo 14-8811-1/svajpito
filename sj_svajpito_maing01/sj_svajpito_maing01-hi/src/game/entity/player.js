@@ -95,6 +95,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.canShot = false;
     setTimeout(() => {
       this.canShot = true;
+      this.scene.alertText.update("");
       console.log("you can shoot again");
     }, 5000);
   }
