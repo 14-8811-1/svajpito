@@ -94,6 +94,11 @@ export const RoomDetail = createVisualComponent({
         data.gameId = props.params.id;
         await Calls.playerDead(data);
       });
+
+      onEvent("playerShot", async (data = {}) => {
+        data.gameId = props.params.id;
+        await Calls.playerShot(data);
+      });
     }
 
     /**
@@ -124,7 +129,7 @@ export const RoomDetail = createVisualComponent({
       <div {...attrs}>
         <RoomContextResolver id={props.params.id}>
           <PlayersProvider playerList={playerList}>
-            <BasicInfo eventSource={eventSourceRef} />
+
           </PlayersProvider>
           <div id="game-container">
             <Game />

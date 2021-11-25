@@ -7,11 +7,11 @@ import store, { UPDATE_SCORE } from "../store";
 // import Firefly from "../entity/firefly";
 import { onEvent, triggerEvent } from "../../common/communication-helper";
 import Shot from "../../game/entity/shot";
+import Score from "../overlay/score";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
-    this.score = 0;
 
     // this.otherPlayers = this.physics.add.group();
     // this.collectFirefly = this.collectFirefly.bind(this);
@@ -114,11 +114,8 @@ export default class MainScene extends Phaser.Scene {
       // console.log("update1", playerInfo, self.otherPlayers.getChildren());
       self.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
-          // otherPlayer.setRotation(playerInfo.rotation);
-          console.log("update2", playerInfo);
-          // playerInfo.velocityX !== undefined && otherPlayer.setVelocityX(playerInfo.velocityX);
-          // playerInfo.velocityY !== undefined && otherPlayer.setVelocityY(playerInfo.velocityY);
-          otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+          //console.log("update2", {x: playerInfo.x, y: playerInfo.y, vX: playerInfo.velocityX, vY: playerInfo.velocityY,});
+          otherPlayer.updatePlayerInfo(playerInfo);
         }
       });
     });
@@ -127,10 +124,23 @@ export default class MainScene extends Phaser.Scene {
      * some player has died
      */
     onEvent("playerDied", (playerInfo) => {
+      self.otherPlayers.getChildren().forEach((otherPlayer) => {
+        if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
+          console.log("destroy", otherPlayer.uuIdentity);
+          otherPlayer.destroy();
+          console.log({ dead: otherPlayer.uuIdentity, killer: playerInfo.killerUuIdentity, me: this.player.uuIdentity });
+          if (playerInfo.killerUuIdentity === this.player.uuIdentity) {
+            this.score.increment();
+          }
+        }
+      });
+    });
+
+    onEvent("playerHit", (playerInfo) => {
+      console.log("playerHit", playerInfo);
       self.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
-          console.log("destroy", "");
-          otherPlayer.destroy();
+          otherPlayer.setHealth(playerInfo.health);
         }
       });
     });
@@ -147,7 +157,8 @@ export default class MainScene extends Phaser.Scene {
 
     this.input.on(
       "pointerdown",
-      function (pointer) {
+      (pointer) => {
+        if (!this.player.isAlive) return;
         let cursor = pointer;
         let angle = Phaser.Math.Angle.Between(
           this.player.x,
@@ -168,7 +179,8 @@ export default class MainScene extends Phaser.Scene {
      * Show bullet from someone else
      */
     onEvent("bulletData", (bulletData) => {
-      new Shot(this, ...Object.values(bulletData));
+      console.log("bulletData", bulletData);
+      new Shot(this, bulletData.x, bulletData.y, bulletData.angle, false, bulletData.uuIdentity);
     });
 
     //set up world bounds
@@ -220,6 +232,8 @@ export default class MainScene extends Phaser.Scene {
     //launch OpeningScene
     // this.scene.launch("OpeningScene");
     this.scene.launch("MainScene");
+
+    this.score = new Score(this, 0);
   }
 
   addPlayer(playerInfo) {
@@ -229,10 +243,12 @@ export default class MainScene extends Phaser.Scene {
     this.player.body.setGravityY(350);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.groundGroup);
+
+    // set score from playerInfo
+    this.score.update(playerInfo.score);
   }
 
   addOtherPlayers(playerInfo) {
-    console.log("hereee", playerInfo);
     let otherPlayer = new Enemy(this, playerInfo.x, playerInfo.y, "newt", playerInfo).setScale(0.5);
     this.physics.add.collider(otherPlayer, this.groundGroup);
     // otherPlayer.setBounce(0.2);
@@ -250,10 +266,15 @@ export default class MainScene extends Phaser.Scene {
   //   firefly.update(this.twinkle);
   // }
 
-  update() {
+  update(time, delta) {
     //call player update
     if (this.player) {
       this.player.update(this.cursors, this.jumpSound);
     }
+    //this.otherPlayers.getChildren().forEach(otherPlayer => otherPlayer.update(time, delta))
+  }
+
+  gameOver() {
+    
   }
 }

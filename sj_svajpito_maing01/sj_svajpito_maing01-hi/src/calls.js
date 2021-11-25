@@ -78,6 +78,14 @@ let Calls = {
     });
   },
 
+  playerShot(dtoInData) {
+    let commandUri = Calls.getCommandUri("game/update2");
+    return Calls.call("post", commandUri, {
+      identifier: "playerShot",
+      data: dtoInData,
+    });
+  },
+
   roomCreate(dtoIn) {
     let commandUri = Calls.getCommandUri("room/create", dtoIn.uri);
     return Calls.call("post", commandUri, dtoIn.data);
