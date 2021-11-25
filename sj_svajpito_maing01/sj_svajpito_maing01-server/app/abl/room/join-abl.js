@@ -1,85 +1,72 @@
 "use strict";
 
-const Errors = require("../../api/errors/room-error").Join;
-
-const instanceChecker = require("../../conponents/instance-checker");
-const Room = require("../../conponents/room");
-const ValidationHelper = require("../../helpers/validation-helper");
-
 const GameRoom = require("../../conponents/game-room");
 const gameStorage = require("../../conponents/game-storage");
 
+const spawnPoints = [
+  [50, 100],
+  [80, 10],
+  [110, 200],
+];
+const spawnPointRange = 100;
+
 class JoinAbl {
-  constructor() {
-    // this.gameRooms = [];
+  constructor() {}
+
+  pickSpawnPoint() {
+    let spawnPoint = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
+    spawnPoint[0] += Math.floor(Math.random() * (spawnPointRange + 1)) - spawnPointRange / 2;
+    return { x: spawnPoint[0], y: spawnPoint[1] };
   }
 
   async join(uri, dtoIn, response, session, uuAppErrorMap = {}) {
-    // async join(response, uuAppErrorMap = {}) {
     let awid = uri.getAwid();
     let roomId = dtoIn.roomId;
-    let gameRoom = gameStorage.getGame({ awid, gameId: roomId }); //this.gameRooms.find((gr) => gr.getId() === roomId);
-    if (!gameRoom) {
-      gameRoom = new GameRoom(roomId);
-      gameStorage.addGame({ awid, gameRoom });
-      // this.gameRooms.push(gameRoom);
-    }
+    let gameRoom = this.getGameRoom(awid, roomId);
 
     let uuIdentity = session.getIdentity().getUuIdentity();
     let name = session.getIdentity().getName();
-    gameStorage.removePlayer(awid, uuIdentity);
-    gameRoom.addPlayer({
+
+    let player = gameRoom.addPlayer({
       name,
       uuIdentity,
       client: response,
+      ...this.pickSpawnPoint(),
     });
 
-    let playerInfoList = gameRoom.getPlayerInfoList();
-    let data = {
-      identifier: "playerList",
-      data: playerInfoList,
-    };
+    gameRoom.sendPlayerUpdate(player, roomId, "newPlayer");
+
+    let data = [
+      {
+        identifier: "currentPlayers",
+        data: gameRoom.getPlayers().map((p) => p.getPlayerInfo()),
+      },
+      // {
+      //   identifier: "starLocation",
+      //   data: gameRoom.getStar().getStarInfo(),
+      // },
+    ];
     response.setHeader("Content-Type", "text/event-stream");
     response.setHeader("Cache-Control", "no-cache,no-transform");
     response.setHeader("Connection", "keep-alive");
     response.setBody(`data: ${JSON.stringify(data)}\n\n`);
-    response.unwrap().on("close", () => gameRoom.removePlayer(uuIdentity));
-    response.unwrap().on("end", () => gameRoom.removePlayer(uuIdentity));
-
-    // return await this.listen(response);
-    // let awid = uri.getAwid();
-    // await instanceChecker.ensureInstanceAndState(awid, Errors, uuAppErrorMap);
-    // ValidationHelper.processValidation({
-    //   dtoIn,
-    //   validationSchema: "roomListDtoInType",
-    //   Errors,
-    //   uuAppErrorMap,
-    // });
-    //
-    // let roomInstance = new Room({ Errors, uri });
-    // let roomData = await roomInstance.join({}, uuAppErrorMap);
-    //
-    // return { ...roomData, uuAppErrorMap };
+    response.unwrap().on("close", () => this.removePlayer(gameRoom, uuIdentity));
+    response.unwrap().on("end", () => this.removePlayer(gameRoom, uuIdentity));
   }
 
-  _removeListener(response) {
-    const index = this.players.findIndex((item) => item === response);
-    if (index >= 0) {
-      console.log("Removing listener at index", index);
-      this.players.splice(index, 1);
+  removePlayer(gameRoom, uuIdentity) {
+    console.error("DISCONNECTED");
+    let player = gameRoom.removePlayer(uuIdentity);
+    gameRoom.sendPlayerUpdate(player, gameRoom.getId(), "disconnect");
+  }
+
+  getGameRoom(awid, roomId) {
+    let gameRoom = gameStorage.getGame({ awid, gameId: roomId });
+    if (!gameRoom) {
+      gameRoom = new GameRoom(roomId);
+      gameStorage.addGame({ awid, gameRoom });
     }
-  }
-
-  async listen(response) {
-    //let roomId =
-    //this.players.push(response);
-    //console.log(this.players);
-    // response.setHeader("Content-Type", "text/event-stream");
-    // response.setHeader("Cache-Control", "no-cache,no-transform");
-    // response.setHeader("Connection", "keep-alive");
-    // response.setBody("\n");
-    // response.unwrap().on("close", () => this._removeListener(response));
-    // response.unwrap().on("end", () => this._removeListener(response));
+    return gameRoom;
   }
 }
 
