@@ -8,6 +8,7 @@ import store, { UPDATE_SCORE } from "../store";
 import { onEvent, triggerEvent } from "../../common/communication-helper";
 import Shot from "../../game/entity/shot";
 import Score from "../overlay/score";
+import AlertText from "../overlay/alert";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -19,6 +20,7 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     //PRELOAD SPRITES
     this.load.image("woods", "./assets/backgrounds/woods.png");
+    this.load.image("star", "assets/star_gold.png");
     this.load.spritesheet("newt", "assets/spriteSheets/newt.png", {
       frameWidth: 118.1,
       frameHeight: 131,
@@ -72,6 +74,8 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
     this.myBullets = this.physics.add.group();
     this.othersBullets = this.physics.add.group();
+
+    console.log(this.cameras.main.centerX, this.cameras.main.centerY)
 
     /**
      * load current players for the new player when he joins the game
@@ -128,7 +132,11 @@ export default class MainScene extends Phaser.Scene {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
           console.log("destroy", otherPlayer.uuIdentity);
           otherPlayer.destroy();
-          console.log({ dead: otherPlayer.uuIdentity, killer: playerInfo.killerUuIdentity, me: this.player.uuIdentity });
+          console.log({
+            dead: otherPlayer.uuIdentity,
+            killer: playerInfo.killerUuIdentity,
+            me: this.player.uuIdentity,
+          });
           if (playerInfo.killerUuIdentity === this.player.uuIdentity) {
             this.score.increment();
           }
@@ -143,6 +151,37 @@ export default class MainScene extends Phaser.Scene {
           otherPlayer.setHealth(playerInfo.health);
         }
       });
+    });
+
+    /**
+     * Star location
+     */
+    onEvent("starLocation", (starLocation) => {
+      console.log(`event called starLocation`, starLocation);
+      if (self.star) self.star.destroy();
+      self.star = self.physics.add.image(starLocation.x, starLocation.y, "star").setImmovable(true);
+      self.star.body.setAllowGravity(false);
+      self.physics.add.overlap(
+        self.player,
+        self.star,
+        function (player, star) {
+          // player.setImmortal();
+          // player.setSpeedBoost();
+          // triggerEvent("superPower", { power: "cantShoot" });
+          triggerEvent("superPower", { power: "cantMove" });
+          self.star.destroy();
+          triggerEvent("starCollected");
+          console.log(`event triggered starLocation`);
+        },
+        null,
+        self
+      );
+    });
+
+    onEvent("superPowerActivated", (activation) => {
+      console.log("superPowerActivated", activation.power);
+      this.player.cantMove();
+      this.alertText.update("you cant move");
     });
 
     /**
@@ -169,8 +208,10 @@ export default class MainScene extends Phaser.Scene {
 
         let args = { x: this.player.x, y: this.player.y, angle };
 
-        new Shot(this, ...Object.values(args), true);
-        triggerEvent("newBullet", args);
+        if (this.player.canShot) {
+          new Shot(this, ...Object.values(args), true);
+          triggerEvent("newBullet", args);
+        }
       },
       this
     );
@@ -234,6 +275,7 @@ export default class MainScene extends Phaser.Scene {
     this.scene.launch("MainScene");
 
     this.score = new Score(this, 0);
+    this.alertText = new AlertText(this, "");
   }
 
   addPlayer(playerInfo) {
@@ -274,7 +316,5 @@ export default class MainScene extends Phaser.Scene {
     //this.otherPlayers.getChildren().forEach(otherPlayer => otherPlayer.update(time, delta))
   }
 
-  gameOver() {
-    
-  }
+  gameOver() {}
 }

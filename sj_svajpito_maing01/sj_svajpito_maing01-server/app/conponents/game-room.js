@@ -82,6 +82,10 @@ class GameRoom {
     this._informPlayers({ ...skipPlayer.getPlayerInfo(), ...data }, gameId || this._id, skipPlayer, identifier);
   }
 
+  sendPlayerActivation(skipPlayer, gameId, identifier, data) {
+    this._informPlayers({ ...skipPlayer.getPlayerInfo(), ...data }, gameId || this._id, skipPlayer, identifier);
+  }
+
   _sendPlayerList(skipPlayer, gameId) {
     this._informPlayers(
       this._players.map((p) => p.getPlayerInfo()),

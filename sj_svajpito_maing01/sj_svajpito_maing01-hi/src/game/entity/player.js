@@ -19,31 +19,39 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.uuIdentity = playerInfo.uuIdentity;
     this.isAlive = true;
+
+    // super powers
+    this.isImmortal = false;
+    this.speedMultiply = 1;
+    this.canShot = true;
+    this.canMove = true;
+
     this.previousPosition = {};
     this.health = playerInfo.health;
 
     scene.physics.add.collider(this, scene.othersBullets, (player, bullet) => {
-      bullet.destroy();
+      if (!this.isImmortal) {
+        bullet.destroy();
 
-      if (!this.isAlive) {
-        console.log("Dead and shot?");
-        return;
+        if (!this.isAlive) {
+          console.log("Dead and shot?");
+          return;
+        }
+        const damage = bullet.damage ?? HEALTH_DECREASE;
+
+        this.health = Math.max(this.health - damage, 0);
+        this.healthBar.setHealth(this.health);
+
+        console.log("trigger playerShot", damage, this.health);
+        triggerEvent("playerShot", { shooterUuIdentity: bullet.uuIdentity, damage });
+
+        if (this.health === 0) {
+          this.die(bullet.uuIdentity);
+          this.scene.gameOver();
+        }
+
+        return false;
       }
-
-      const damage = bullet.damage ?? HEALTH_DECREASE;
-
-      this.health = Math.max(this.health - damage, 0);
-      this.healthBar.setHealth(this.health);
-
-      console.log("trigger playerShot", damage, this.health);
-      triggerEvent("playerShot", { shooterUuIdentity: bullet.uuIdentity, damage });
-
-      if (this.health === 0) {
-        this.die(bullet.uuIdentity);
-        this.scene.gameOver();
-      }
-
-      return false;
     });
 
     this.depth = 0;
@@ -58,6 +66,41 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     );
   }
 
+  setImmortal() {
+    this.isImmortal = true;
+    console.log("you are immortal");
+    setTimeout(() => {
+      this.isImmortal = false;
+      console.log("you are mortal again");
+    }, 5000);
+  }
+
+  setSpeedBoost() {
+    this.speedMultiply = 3;
+    console.log("you are super fast");
+    setTimeout(() => {
+      this.speedMultiply = 1;
+      console.log("you are slow again");
+    }, 5000);
+  }
+
+  cantShot() {
+    this.canShot = false;
+    setTimeout(() => {
+      this.canShot = true;
+      console.log("you can shoot again");
+    }, 5000);
+  }
+
+  cantMove() {
+    this.canMove = false;
+    setTimeout(() => {
+      this.canMove = true;
+      this.scene.alertText.update("");
+      console.log("you can move again");
+    }, 5000);
+  }
+
   die(killerUuIdentity) {
     this.isAlive = false;
 
@@ -68,20 +111,26 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   updateMovement(cursors) {
-    // Move left
-    if (cursors.left.isDown) {
-      this.setVelocityX(-360);
-      this.velocityX = -360;
-      if (this.body.touching.down) this.play("left", true);
-    }
-    // Move right
-    else if (cursors.right.isDown) {
-      this.setVelocityX(360);
-      this.velocityX = 360;
-      if (this.body.touching.down) this.play("right", true);
-    }
-    // Neutral (no movement)
-    else {
+    if (this.canMove) {
+      // Move left
+      if (cursors.left.isDown) {
+        this.setVelocityX(-360 * this.speedMultiply);
+        this.velocityX = -360 * this.speedMultiply;
+        if (this.body.touching.down) this.play("left", true);
+      }
+      // Move right
+      else if (cursors.right.isDown) {
+        this.setVelocityX(360 * this.speedMultiply);
+        this.velocityX = 360 * this.speedMultiply;
+        if (this.body.touching.down) this.play("right", true);
+      }
+      // Neutral (no movement)
+      else {
+        this.setVelocityX(0);
+        this.velocityX = 0;
+        this.play("turn", true);
+      }
+    } else {
       this.setVelocityX(0);
       this.velocityX = 0;
       this.play("turn", true);
@@ -91,8 +140,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   updateJump(cursors, jumpSound) {
     if (cursors.up.isDown && this.body.touching.down) {
       jumpSound.play();
-      this.setVelocityY(-800);
-      this.velocityY = -800;
+      this.setVelocityY(-800 * this.speedMultiply);
+      this.velocityY = -800 * this.speedMultiply;
     } else if (this.body.touching.down) {
       this.velocityY = 0;
     }

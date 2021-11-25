@@ -99,6 +99,11 @@ export const RoomDetail = createVisualComponent({
         data.gameId = props.params.id;
         await Calls.playerShot(data);
       });
+
+      onEvent("superPower", async (data = {}) => {
+        data.gameId = props.params.id;
+        await Calls.superPower(data);
+      });
     }
 
     /**

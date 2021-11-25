@@ -28,6 +28,7 @@ class UpdateAbl {
       if (dtoIn.identifier === "newBullet") this.processNewBullet(player, gameRoom, dtoIn.data, uuIdentity);
       if (dtoIn.identifier === "playerDead") this.processPlayerDead(player, gameRoom, dtoIn.data, uuIdentity);
       if (dtoIn.identifier === "playerShot") this.processPlayerShot(player, gameRoom, dtoIn.data, uuIdentity);
+      if (dtoIn.identifier === "superPower") this.processSuperPower(player, gameRoom, dtoIn.data, uuIdentity);
     }
 
     return { ...response, uuAppErrorMap };
@@ -71,6 +72,17 @@ class UpdateAbl {
   processPlayerShot(player, gameRoom, data, _uuIdentity) {
     player.setHealth(player.getHealth() - data.damage);
     gameRoom.sendPlayerHit(player, gameRoom.getId(), "playerHit", data);
+  }
+
+  /**
+   *
+   * @param player
+   * @param gameRoom
+   * @param data
+   */
+  processSuperPower(player, gameRoom, data, _uuIdentity) {
+    player.setHealth(player.getHealth() - data.damage);
+    gameRoom.sendPlayerHit(player, gameRoom.getId(), "superPowerActivated", data);
   }
 
   /**
