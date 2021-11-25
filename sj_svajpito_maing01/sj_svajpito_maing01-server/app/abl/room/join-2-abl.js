@@ -24,9 +24,9 @@ class JoinAbl {
 
     let data = [
       {
-        identifier: "currentPlayers",
-        data: gameRoom.getPlayers().map((p) => p.getPlayerInfo()),
-      },
+        identifier: "initialGameState",
+        data: gameRoom.getGameRoomInfo(),
+      }
       // {
       //   identifier: "starLocation",
       //   data: gameRoom.getStar().getStarInfo(),

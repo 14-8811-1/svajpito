@@ -68,6 +68,10 @@ class Player {
     this._score = score;
   }
 
+  getScore() {
+    return this._score;
+  }
+
   setHealth(health) {
     this._health = health;
   }
