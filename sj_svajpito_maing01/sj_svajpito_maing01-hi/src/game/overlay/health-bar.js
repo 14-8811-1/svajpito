@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 export default class HealthBar {
-  constructor(scene, x, y, fill, value) {
+  constructor(scene, x, y, fill, value, uuIdentity) {
     this.bar = new Phaser.GameObjects.Graphics(scene);
 
     this.x = x;
@@ -10,11 +10,15 @@ export default class HealthBar {
     this.p = 76 / 100;
     this.value = value;
 
+    this.tag = new Phaser.GameObjects.Text(scene, x, y, uuIdentity, { align: "center", fixedWidth: this.p * 100 - 4, fixedHeight: 12, fontSize: 8, stroke: "#000", fill: "#000" });
+
     this.fill = fill;
+    this.uuIdentity = uuIdentity;
 
     this.draw();
 
     scene.add.existing(this.bar);
+    scene.add.existing(this.tag);
   }
 
   setPos(x, y) {
@@ -43,9 +47,13 @@ export default class HealthBar {
     this.bar.fillStyle(this.fill);
     var d = Math.floor(this.p * this.value) - 4;
     this.bar.fillRect(this.x + 2, this.y + 2, d, 12);
+
+    // Tag
+    this.tag.setPosition(this.x + 2, this.y + 2 + 2);
   }
 
   destroy() {
     this.bar.destroy();
+    this.tag.destroy();
   }
 }

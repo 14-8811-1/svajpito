@@ -18,8 +18,15 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setDisplaySize(53, 40);
 
     this.health = playerInfo.health ?? 100;
-    
-    this.healthBar = new HealthBar(scene, this.x + HEALTH_BAR_OFFSET_X, this.y + HEALTH_BAR_OFFSET_Y, HEALTH_BAR_FILL, this.health);
+
+    this.healthBar = new HealthBar(
+      scene,
+      this.x + HEALTH_BAR_OFFSET_X,
+      this.y + HEALTH_BAR_OFFSET_Y,
+      HEALTH_BAR_FILL,
+      this.health,
+      this.uuIdentity
+    );
   }
 
   setPosition(x, y) {

@@ -46,7 +46,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.x + HEALTH_BAR_OFFSET_X,
       this.y + HEALTH_BAR_OFFSET_Y,
       HEALTH_BAR_FILL,
-      this.health
+      this.health,
+      this.uuIdentity
     );
   }
 
