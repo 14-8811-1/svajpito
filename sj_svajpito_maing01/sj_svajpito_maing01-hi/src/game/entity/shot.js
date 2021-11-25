@@ -2,12 +2,14 @@ import "phaser";
 
 export default class Shot extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, angle, isMyBullet = false, uuIdentity) {
-    super(scene, x, y, "bullet");
+    super(scene, x, y, "orb");
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
     this.setAngle(angle);
+    this.setScale(0.1);
+    this.setTint(0xff0000);
     this.setCollideWorldBounds(true);
     this.bullet_speed = 800;
     if (isMyBullet) {
