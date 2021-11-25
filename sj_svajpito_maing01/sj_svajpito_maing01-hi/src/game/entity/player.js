@@ -17,11 +17,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.uuIdentity = playerInfo.uuIdentity;
     this.isAlive = true;
-<<<<<<< HEAD
     this.previousPosition = {};
-=======
     this.health = playerInfo.health;
->>>>>>> feature/overlay
 
     scene.physics.add.collider(this, scene.othersBullets, (player, bullet) => {
       bullet.destroy();
