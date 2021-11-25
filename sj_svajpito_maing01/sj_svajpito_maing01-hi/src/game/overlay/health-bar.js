@@ -31,16 +31,21 @@ export default class HealthBar {
   draw() {
     this.bar.clear();
 
-    //  BG
+    //  border
     this.bar.fillStyle(0x000000);
-    this.bar.fillRect(this.x, this.y, 80, 16);
+    this.bar.fillRect(this.x, this.y, this.p * 100, 16);
 
-    //  Health
+    //  BG
+    this.bar.fillStyle(0xffffff);
+    this.bar.fillRect(this.x + 2, this.y + 2, this.p * 100 - 4, 12);
+
+    // Health
     this.bar.fillStyle(this.fill);
-    this.bar.fillRect(this.x + 2, this.y + 2, this.p * 100, 12);
-
-    var d = Math.floor(this.p * this.value);
-
+    var d = Math.floor(this.p * this.value) - 4;
     this.bar.fillRect(this.x + 2, this.y + 2, d, 12);
+  }
+
+  destroy() {
+    this.bar.destroy();
   }
 }

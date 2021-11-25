@@ -1,7 +1,7 @@
 import "phaser";
 
 export default class Shot extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, angle, isMyBullet = false) {
+  constructor(scene, x, y, angle, isMyBullet = false, uuIdentity) {
     super(scene, x, y, "bullet");
 
     scene.add.existing(this);
@@ -15,6 +15,7 @@ export default class Shot extends Phaser.Physics.Arcade.Sprite {
     } else {
       scene.othersBullets.add(this);
     }
+    this.uuIdentity = uuIdentity;
 
     scene.physics.add.collider(this, scene.otherPlayers, (bullet, players) => {
       bullet.destroy();

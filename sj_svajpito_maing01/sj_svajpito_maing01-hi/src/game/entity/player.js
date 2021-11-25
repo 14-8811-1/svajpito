@@ -17,12 +17,20 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.previousPosition = {};
     this.uuIdentity = playerInfo.uuIdentity;
     this.isAlive = true;
+    this.health = playerInfo.health;
 
     scene.physics.add.collider(this, scene.othersBullets, (player, bullet) => {
       bullet.destroy();
 
-      this.health = Math.max(this.health - HEALTH_DECREASE, 0);
+      if (!this.isAlive) return;
+
+      const damage = bullet.damage ?? HEALTH_DECREASE;
+
+      this.health = Math.max(this.health - damage, 0);
       this.healthBar.setHealth(this.health);
+
+      console.log("trigger playerShot", damage, this.health);
+      triggerEvent("playerShot", { shooterUuIdentity: bullet.uuIdentity, damage });
 
       if (this.health === 0) {
         this.die();
@@ -42,15 +50,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     );
   }
 
-  die() {
+  die(killerUuIdentity) {
     this.isAlive = false;
 
     this.destroy();
 
     console.log("trigger playerDead");
-    triggerEvent("playerDead");
-
-    this.healthBar.destroy();
+    triggerEvent("playerDead", { killerUuIdentity });
   }
 
   updateMovement(cursors) {
@@ -144,5 +150,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // console.log(this);
     // console.log("a");
     // debugger;
+  }
+
+  destroy() {
+    super.destroy();
+    this.healthBar.destroy();
   }
 }

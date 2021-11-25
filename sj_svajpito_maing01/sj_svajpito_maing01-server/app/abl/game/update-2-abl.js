@@ -27,6 +27,7 @@ class UpdateAbl {
       if (dtoIn.identifier === "starCollected") response = this.processStarCollected(player, gameRoom, uuIdentity);
       if (dtoIn.identifier === "newBullet") this.processNewBullet(player, gameRoom, dtoIn.data, uuIdentity);
       if (dtoIn.identifier === "playerDead") this.processPlayerDead(player, gameRoom, dtoIn.data, uuIdentity);
+      if (dtoIn.identifier === "playerShot") this.processPlayerShot(player, gameRoom, dtoIn.data, uuIdentity);
     }
 
     return { ...response, uuAppErrorMap };
@@ -56,6 +57,17 @@ class UpdateAbl {
   processPlayerDead(player, gameRoom, data, uuIdentity) {
     player.setAlive(false);
     gameRoom.sendPlayerDead(player, gameRoom.getId(), "playerDied", data);
+  }
+
+  /**
+   * 
+   * @param player 
+   * @param gameRoom 
+   * @param data 
+   */
+  processPlayerShot(player, gameRoom, data, _uuIdentity) {
+    player.setHealth(player.getHealth() - data.damage);
+    gameRoom.sendPlayerHit(player, gameRoom.getId(), "playerHit", data);
   }
 
   /**

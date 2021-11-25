@@ -71,12 +71,16 @@ class GameRoom {
   }
 
   sendBulletUpdate(skipPlayer, gameId, identifier, bulletData) {
-    let bullet = new Bullet(bulletData);
+    let bullet = new Bullet(bulletData, skipPlayer);
     this._informPlayers(bullet.getBulletInfo(), gameId || this._id, skipPlayer, identifier);
   }
 
   sendPlayerDead(skipPlayer, gameId, identifier) {
     this._informPlayers(skipPlayer.getPlayerInfo(), gameId || this._id, skipPlayer, identifier);
+  }
+
+  sendPlayerHit(skipPlayer, gameId, identifier, data) {
+    this._informPlayers({ ...skipPlayer.getPlayerInfo(), ...data }, gameId || this._id, skipPlayer, identifier);
   }
 
   _sendPlayerList(skipPlayer, gameId) {

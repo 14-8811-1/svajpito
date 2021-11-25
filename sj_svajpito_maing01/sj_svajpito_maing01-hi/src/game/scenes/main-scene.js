@@ -7,11 +7,11 @@ import store, { UPDATE_SCORE } from "../store";
 // import Firefly from "../entity/firefly";
 import { onEvent, triggerEvent } from "../../common/communication-helper";
 import Shot from "../../game/entity/shot";
+import Score from "../overlay/score";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
-    this.score = 0;
 
     // this.otherPlayers = this.physics.add.group();
     // this.collectFirefly = this.collectFirefly.bind(this);
@@ -135,6 +135,15 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
+    onEvent("playerHit", (playerInfo) => {
+      console.log("playerHit", playerInfo);
+      self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+        if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
+          otherPlayer.setHealth(playerInfo.health);
+        }
+      });
+    })
+
     /**
      * Shot on button press
      */
@@ -220,6 +229,8 @@ export default class MainScene extends Phaser.Scene {
     //launch OpeningScene
     // this.scene.launch("OpeningScene");
     this.scene.launch("MainScene");
+
+    this.score = new Score(this, 0);
   }
 
   addPlayer(playerInfo) {
@@ -229,6 +240,9 @@ export default class MainScene extends Phaser.Scene {
     this.player.body.setGravityY(350);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.groundGroup);
+
+    // set score from playerInfo
+    this.score.update(playerInfo.score);
   }
 
   addOtherPlayers(playerInfo) {

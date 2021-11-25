@@ -11,6 +11,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
+    this.setPushable(false);
 
     this.uuIdentity = playerInfo.uuIdentity;
     this.setOrigin(0.5, 0.5);
@@ -24,5 +25,16 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
   setPosition(x, y) {
     super.setPosition(x, y);
     this.healthBar?.setPos(x + HEALTH_BAR_OFFSET_X, y + HEALTH_BAR_OFFSET_Y);
+  }
+
+  setHealth(value) {
+    console.log("setHealth", this.uuIdentity, value);
+    this.health = value;
+    this.healthBar.setHealth(this.health);
+  }
+
+  destroy() {
+    this.healthBar?.destroy();
+    super.destroy();
   }
 }
