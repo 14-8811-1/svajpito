@@ -8,7 +8,6 @@ const HEALTH_BAR_FILL = 0x00ff00;
 const HEALTH_BAR_OFFSET_X = -40;
 const HEALTH_BAR_OFFSET_Y = -50;
 
-
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, spriteKey, playerInfo = { uuIdentity: "0-0", health: 100 }) {
     super(scene, x, y, spriteKey);
@@ -34,20 +33,24 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.depth = 0;
 
-    this.healthBar = new HealthBar(scene, this.x + HEALTH_BAR_OFFSET_X, this.y + HEALTH_BAR_OFFSET_Y, HEALTH_BAR_FILL, this.health);
+    this.healthBar = new HealthBar(
+      scene,
+      this.x + HEALTH_BAR_OFFSET_X,
+      this.y + HEALTH_BAR_OFFSET_Y,
+      HEALTH_BAR_FILL,
+      this.health
+    );
   }
 
   die() {
     this.isAlive = false;
 
     this.destroy();
-    console.log("You are dead");
 
-    if (this.isAlive) {
-      this.isAlive = false;
-      console.log("trigger playerDead");
-      triggerEvent("playerDead");
-    }
+    console.log("trigger playerDead");
+    triggerEvent("playerDead");
+
+    this.healthBar.destroy();
   }
 
   updateMovement(cursors) {
