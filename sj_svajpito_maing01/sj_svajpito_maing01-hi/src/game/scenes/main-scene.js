@@ -3,6 +3,7 @@ import * as UU5 from "uu5g04";
 import Player from "../entity/player";
 import Ground from "../entity/ground";
 import Enemy from "../entity/enemy";
+import { Uri } from "uu_appg01_core";
 import store, { UPDATE_SCORE } from "../store";
 // import Firefly from "../entity/firefly";
 import { onEvent, triggerEvent } from "../../common/communication-helper";
@@ -156,7 +157,9 @@ export default class MainScene extends Phaser.Scene {
       this.timer.setTime(this.gameRoom.time);
       console.log("initialGameState prepped", this.gameRoom);
       if (this.gameRoom.state === "counted") {
-        UU5.Environment.setRoute("score");
+        let url = Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString();
+        window.location.href = url;
+        // UU5.Environment.setRoute("score");
       }
     });
 
