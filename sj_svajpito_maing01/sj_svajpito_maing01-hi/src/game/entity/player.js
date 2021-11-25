@@ -9,7 +9,7 @@ const HEALTH_BAR_OFFSET_X = -40;
 const HEALTH_BAR_OFFSET_Y = -50;
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, spriteKey, playerInfo = { uuIdentity: "0-0", health: 100 }) {
+  constructor(scene, x, y, spriteKey, playerInfo = { uuIdentity: "0-0", health: 100 }, sounds) {
     super(scene, x, y, spriteKey);
     this.scene = scene;
     this.scene.add.existing(this);
@@ -19,6 +19,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = true;
     this.previousPosition = {};
     this.health = playerInfo.health;
+
+    this.sounds = {};
+    this.sounds.jump = sounds.jump.pick();
 
     scene.physics.add.collider(this, scene.othersBullets, (player, bullet) => {
       bullet.destroy();
@@ -83,17 +86,21 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  updateJump(cursors, jumpSound) {
-    if (cursors.up.isDown && this.body.touching.down) {
-      jumpSound.play();
+  updateJump(cursors) {
+    if (cursors.up.isDown && this.body.touching.down && !this.isJumping) {
+      this.isJumping = true;
+      this.sounds.jump.play();
       this.setVelocityY(-800);
+      setTimeout(() => {
+        this.isJumping = false;
+      }, 200);
     }
   }
 
-  update(cursors, jumpSound) {
+  update(cursors) {
     if (this.isAlive) {
       this.updateMovement(cursors);
-      this.updateJump(cursors, jumpSound);
+      this.updateJump(cursors);
     }
     if (this.previousPosition.x) {
       if (
