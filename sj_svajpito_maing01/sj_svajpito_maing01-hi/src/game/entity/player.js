@@ -1,8 +1,16 @@
 import "phaser";
 import { triggerEvent } from "../../common/communication-helper";
+import HealthBar from "../overlay/health-bar";
+
+const HEALTH_DECREASE = 10;
+
+const HEALTH_BAR_FILL = 0x00ff00;
+const HEALTH_BAR_OFFSET_X = -40;
+const HEALTH_BAR_OFFSET_Y = -50;
+
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, spriteKey, playerInfo = { uuIdentity: "0-0" }) {
+  constructor(scene, x, y, spriteKey, playerInfo = { uuIdentity: "0-0", health: 100 }) {
     super(scene, x, y, spriteKey);
     this.scene = scene;
     this.scene.add.existing(this);
@@ -13,19 +21,33 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     scene.physics.add.collider(this, scene.othersBullets, (player, bullet) => {
       bullet.destroy();
-      this.destroy();
-      console.log("You are dead");
 
-      if (this.isAlive) {
-        this.isAlive = false;
-        console.log("trigger playerDead");
-        triggerEvent("playerDead");
+      this.health = Math.max(this.health - HEALTH_DECREASE, 0);
+      this.healthBar.setHealth(this.health);
+
+      if (this.health === 0) {
+        this.die();
       }
 
       return false;
     });
 
     this.depth = 0;
+
+    this.healthBar = new HealthBar(scene, this.x + HEALTH_BAR_OFFSET_X, this.y + HEALTH_BAR_OFFSET_Y, HEALTH_BAR_FILL, this.health);
+  }
+
+  die() {
+    this.isAlive = false;
+
+    this.destroy();
+    console.log("You are dead");
+
+    if (this.isAlive) {
+      this.isAlive = false;
+      console.log("trigger playerDead");
+      triggerEvent("playerDead");
+    }
   }
 
   updateMovement(cursors) {
@@ -115,12 +137,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
     this.previousPosition = { x: this.x, y: this.y, velocityY: this.velocityY, velocityX: this.velocityX };
+    this.healthBar.setPos(this.x + HEALTH_BAR_OFFSET_X, this.y + HEALTH_BAR_OFFSET_Y);
     // console.log(this);
     // console.log("a");
     // debugger;
   }
-
-
-
-
 }
