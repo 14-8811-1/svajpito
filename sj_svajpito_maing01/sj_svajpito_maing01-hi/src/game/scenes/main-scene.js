@@ -359,33 +359,25 @@ export default class MainScene extends Phaser.Scene {
     //platforms
     this.groundGroup = this.physics.add.staticGroup({ classType: Ground });
 
-    this.groundGroup.create(100, 100, "ground");
-    this.groundGroup.create(130, 410, "ground");
-    this.groundGroup.create(145, 850, "ground");
+    this.groundGroup.create(90, 250, "ground");
+    this.groundGroup.create(430, 290, "ground");
+    this.groundGroup.create(1350, 310, "ground");
 
-    this.groundGroup.create(380, 250, "ground");
-    this.groundGroup.create(350, 540, "ground");
-    this.groundGroup.create(320, 720, "ground");
+    this.groundGroup.create(120, 490, "ground");
+    this.groundGroup.create(715, 460, "ground");
+    this.groundGroup.create(1100, 515, "ground");
+    this.groundGroup.create(1750, 450, "ground");
 
-    this.groundGroup.create(610, 250, "ground");
-    this.groundGroup.create(600, 540, "ground");
-    this.groundGroup.create(590, 740, "ground");
+    this.groundGroup.create(110, 800, "ground");
+    this.groundGroup.create(410, 610, "ground");
+    this.groundGroup.create(735, 680, "ground");
+    this.groundGroup.create(1200, 770, "ground");
+    this.groundGroup.create(1550, 600, "ground");
 
-    this.groundGroup.create(780, 100, "ground");
-    this.groundGroup.create(750, 410, "ground");
-    this.groundGroup.create(720, 870, "ground");
-
-    this.groundGroup.create(1610, 250, "ground");
-    this.groundGroup.create(1360, 540, "ground");
-    this.groundGroup.create(1590, 740, "ground");
-
-    this.groundGroup.create(1180, 100, "ground");
-    this.groundGroup.create(1150, 410, "ground");
-    this.groundGroup.create(1120, 870, "ground");
-
-    this.groundGroup.create(1780, 100, "ground");
-    this.groundGroup.create(1250, 410, "ground");
-    this.groundGroup.create(1720, 860, "ground");
+    this.groundGroup.create(410, 880, "ground");
+    this.groundGroup.create(765, 870, "ground");
+    this.groundGroup.create(1400, 900, "ground");
+    this.groundGroup.create(1690, 820, "ground");
 
     //floor
     this.groundGroup.create(160, 1020, "mainGround");
