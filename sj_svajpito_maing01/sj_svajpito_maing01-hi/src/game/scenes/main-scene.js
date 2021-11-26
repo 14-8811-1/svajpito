@@ -1,9 +1,9 @@
 import "phaser";
 import * as UU5 from "uu5g04";
+import { Uri } from "uu_appg01_core";
 import Player from "../entity/player";
 import Ground from "../entity/ground";
 import Enemy from "../entity/enemy";
-import { Uri } from "uu_appg01_core";
 import store, { UPDATE_SCORE } from "../store";
 // import Firefly from "../entity/firefly";
 import { onEvent, triggerEvent } from "../../common/communication-helper";
@@ -39,6 +39,27 @@ const AUDIO_FILES = {
     "assets/audio/woohoo/woohoo10.mp3",
   ],
 };
+
+const PLATFORMS = [
+  [90, 250],
+  [430, 320],
+  [1350, 310],
+  [120, 490],
+  [715, 460],
+  [1100, 515],
+  [1750, 450],
+  [110, 800],
+
+  [410, 610],
+  [735, 730],
+  [1200, 770],
+  [1550, 600],
+
+  [410, 880],
+  [795, 870],
+  [1350, 900],
+  [1690, 820],
+];
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -163,7 +184,10 @@ export default class MainScene extends Phaser.Scene {
       console.log("initialGameState prepped", this.gameRoom);
       if (this.gameRoom.state === "counted") {
         let url = Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString();
-        window.location.href = url;
+        // window.location.href = url;
+        window.location.assign(url);
+        // window.location.replace(url);
+        // window.location.reload();
         // UU5.Environment.setRoute("score");
       } else if (this.gameRoom.state === "waiting") {
         this.alertText.update("Waiting for others...");
@@ -320,7 +344,7 @@ export default class MainScene extends Phaser.Scene {
           case "ended":
             this.sounds.music.stop();
           case "counted":
-            UU5.Environment.setRoute("score");
+            window.location.assign(Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString());
         }
       }
     });
@@ -373,37 +397,15 @@ export default class MainScene extends Phaser.Scene {
 
     //background
     this.add.image(0, 0, "bg").setOrigin(0, 0);
-    //this.cameras.main.setBounds(0, 0, 600, 400);
-
     this.createAnimations();
 
-    //cursors
+    // Cursors
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    //platforms
+    // Platforms
     this.groundGroup = this.physics.add.staticGroup({ classType: Ground });
-
-    this.groundGroup.create(90, 250, "ground");
-    this.groundGroup.create(430, 290, "ground");
-    this.groundGroup.create(1350, 310, "ground");
-
-    this.groundGroup.create(120, 490, "ground");
-    this.groundGroup.create(715, 460, "ground");
-    this.groundGroup.create(1100, 515, "ground");
-    this.groundGroup.create(1750, 450, "ground");
-
-    this.groundGroup.create(110, 800, "ground");
-    this.groundGroup.create(410, 610, "ground");
-    this.groundGroup.create(735, 680, "ground");
-    this.groundGroup.create(1200, 770, "ground");
-    this.groundGroup.create(1550, 600, "ground");
-
-    this.groundGroup.create(410, 880, "ground");
-    this.groundGroup.create(765, 870, "ground");
-    this.groundGroup.create(1400, 900, "ground");
-    this.groundGroup.create(1690, 820, "ground");
-
-    //floor
+    PLATFORMS.forEach((platform) => this.groundGroup.create(platform[0], platform[1], "ground"));
+    // Bottom bound
     this.groundGroup.create(160, 1020, "mainGround");
 
     //fireflies
