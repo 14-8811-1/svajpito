@@ -158,6 +158,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(cursors) {
+    this.previousPosition = { x: this.x, y: this.y, velocityY: this.velocityY, velocityX: this.velocityX };cccccctbbbcgdivrkjfijdcueliuecjekhuglvkvijbr
+    
     if (this.isAlive) {
       this.updateMovement(cursors);
       this.updateJump(cursors);
@@ -179,7 +181,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         });
       }
     }
-    this.previousPosition = { x: this.x, y: this.y, velocityY: this.velocityY, velocityX: this.velocityX };
     this.healthBar.setPos(this.x + HEALTH_BAR_OFFSET_X, this.y + HEALTH_BAR_OFFSET_Y);
 
     // console.log(this);

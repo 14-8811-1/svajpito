@@ -127,7 +127,11 @@ export default class MainScene extends Phaser.Scene {
       });
       this.sounds[identifier] = {
         // webpack workaround - cant use use arguments straight up
-        play: (...args) => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`].play.apply(this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`], args),
+        play: (...args) =>
+          this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`].play.apply(
+            this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`],
+            args
+          ),
         pick: () => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`],
       };
     };
@@ -161,6 +165,8 @@ export default class MainScene extends Phaser.Scene {
         let url = Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString();
         window.location.href = url;
         // UU5.Environment.setRoute("score");
+      } else if (this.gameRoom.state === "waiting") {
+        this.alertText.update("Waiting for others...");
       }
     });
 
@@ -291,7 +297,10 @@ export default class MainScene extends Phaser.Scene {
      * Game progress
      */
     onEvent("gameTick", (gameInfo) => {
+      const prevState = this.gameRoom.state;
       this.gameRoom = { ...this.gameRoom, ...gameInfo };
+
+      // actions executed every tick
       console.log("gameTick", this.gameRoom);
       this.timer.setTime(gameInfo.time <= 0 ? gameInfo.time : gameInfo.limit - gameInfo.time);
       switch (this.gameRoom.state) {
@@ -300,10 +309,19 @@ export default class MainScene extends Phaser.Scene {
             this.sounds.countdown.play();
           }
           break;
-        case "ended":
-          this.sounds.music.stop();
-        case "counted":
-          UU5.Environment.setRoute("score");
+      }
+
+      // actions executed on state change
+      if (prevState !== this.gameRoom.state) {
+        switch (this.gameRoom.state) {
+          case "starting":
+            this.alertText.update("");
+            break;
+          case "ended":
+            this.sounds.music.stop();
+          case "counted":
+            UU5.Environment.setRoute("score");
+        }
       }
     });
 

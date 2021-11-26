@@ -3,8 +3,8 @@ export default class AlertText {
     this.scene = scene;
     this.text = text;
 
-    const screenCenterX = scene.cameras.main.worldView.x + scene.cameras.main.width / 2;
-    const screenCenterY = scene.cameras.main.worldView.y + scene.cameras.main.height / 2;
+    const screenCenterX = scene.cameras.main.width / 2;
+    const screenCenterY = scene.cameras.main.height / 2;
 
     this.alertText = scene.add
       .text(screenCenterX, screenCenterY, this.text, {
@@ -12,7 +12,7 @@ export default class AlertText {
         fill: "#fff",
       })
       .setOrigin(0.5);
-    // this.scoreText.setScrollFactor(0);
+    this.alertText.setScrollFactor(0);
   }
 
   // updates score display
