@@ -34,6 +34,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.sounds = {};
     this.sounds.jump = sounds.jump.pick();
+    this.sounds.death = sounds.death;
 
     scene.physics.add.collider(this, scene.othersBullets, (player, bullet) => {
       if (!this.isImmortal) {
@@ -50,10 +51,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         console.log("trigger playerShot", damage, this.health);
         triggerEvent("playerShot", { shooterUuIdentity: bullet.uuIdentity, damage });
-
-        if (this.health === 0) {
-          this.die(bullet.uuIdentity);
-        }
 
         if (this.health === 0) {
           this.die(bullet.uuIdentity);
@@ -113,6 +110,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = false;
 
     this.destroy();
+    this.sounds.death.play({ volume: 0.5 });
 
     console.log("trigger playerDead");
     triggerEvent("playerDead", { killerUuIdentity });

@@ -74,7 +74,7 @@ class UpdateAbl {
    * @param data
    */
   processPlayerShot(player, gameRoom, data, _uuIdentity) {
-    player.setHealth(player.getHealth() - data.damage);
+    player.setHealth(player.getHealth() - data.damage ?? 0);
     gameRoom.sendPlayerHit(player, gameRoom.getId(), "playerHit", data);
   }
 
@@ -85,7 +85,6 @@ class UpdateAbl {
    * @param data
    */
   processSuperPower(player, gameRoom, data, _uuIdentity) {
-    player.setHealth(player.getHealth() - data.damage);
     gameRoom.sendPlayerHit(player, gameRoom.getId(), "superPowerActivated", data);
   }
 

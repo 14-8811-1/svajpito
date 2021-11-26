@@ -126,7 +126,8 @@ export default class MainScene extends Phaser.Scene {
         this.sounds[`${identifier}_${idx}`] = snd;
       });
       this.sounds[identifier] = {
-        play: () => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`].play(...arguments),
+        // webpack workaround - cant use use arguments straight up
+        play: (...args) => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`].play.apply(this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`], args),
         pick: () => this.sounds[`${identifier}_${Math.floor(Math.random() * (paths.length - 1))}`],
       };
     };
@@ -218,7 +219,7 @@ export default class MainScene extends Phaser.Scene {
     onEvent("playerDied", (playerInfo) => {
       self.otherPlayers.getChildren().forEach((otherPlayer) => {
         if (playerInfo.uuIdentity === otherPlayer.uuIdentity) {
-          this.sounds.death.play({ volume: 0.2 });
+          this.sounds.death.play({ volume: 0.1 });
           console.log("destroy", otherPlayer.uuIdentity);
           otherPlayer.destroy();
           console.log({
@@ -227,7 +228,7 @@ export default class MainScene extends Phaser.Scene {
             me: this.player.uuIdentity,
           });
           if (playerInfo.killerUuIdentity === this.player.uuIdentity) {
-            this.sounds.woohoo.play();
+            this.sounds.woohoo.play({ delay: 1, volume: 0.5 });
             this.score.increment();
           }
         }
@@ -298,10 +299,12 @@ export default class MainScene extends Phaser.Scene {
       this.timer.setTime(gameInfo.time <= 0 ? gameInfo.time : gameInfo.limit - gameInfo.time);
       switch (this.gameRoom.state) {
         case "starting":
-          if (this.gameRoom.time === -6) {
+          if (this.gameRoom.time === -4) {
             this.sounds.countdown.play();
           }
           break;
+        case "ended":
+          this.sounds.music.stop();
         case "counted":
           window.location.assign(Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString());
         // UU5.Environment.setRoute("score");
