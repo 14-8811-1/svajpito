@@ -43,7 +43,7 @@ export default class HealthBar {
     this.bar.clear();
 
     //  border
-    this.bar.fillStyle(0x000000);
+    this.bar.fillStyle(0xffffff);
     this.bar.fillRect(this.x, this.y, this.p * 100, 16);
 
     //  BG

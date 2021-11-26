@@ -4,7 +4,7 @@ export default class Score {
     this.score = score;
     this.scoreText = scene.add.text(16, 16, "Score: 0", {
       fontSize: "32px",
-      fill: "#000"
+      fill: "#ffff",
     });
     this.scoreText.setScrollFactor(0);
   }

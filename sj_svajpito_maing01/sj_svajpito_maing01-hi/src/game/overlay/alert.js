@@ -9,7 +9,7 @@ export default class AlertText {
     this.alertText = scene.add
       .text(screenCenterX, screenCenterY, this.text, {
         fontSize: "64px",
-        fill: "#000",
+        fill: "#fff",
       })
       .setOrigin(0.5);
     // this.scoreText.setScrollFactor(0);

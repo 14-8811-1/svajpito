@@ -51,7 +51,7 @@ class JoinAbl {
   getGameRoom(awid, roomId) {
     let gameRoom = gameStorage.getGame({ awid, gameId: roomId });
     if (!gameRoom) {
-      gameRoom = new GameRoom(roomId);
+      gameRoom = new GameRoom(roomId, awid);
       gameStorage.addGame({ awid, gameRoom });
     }
     return gameRoom;

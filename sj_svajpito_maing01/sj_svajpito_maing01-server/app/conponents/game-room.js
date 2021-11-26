@@ -4,15 +4,16 @@ const Bullet = require("./bullet");
 const pickSpawnPoint = require("../helpers/spawner");
 const Elo = require("../abl/elo");
 
-const TIME_LIMIT = 5 * 60;
+const TIME_LIMIT = 5; // * 60;
 
 class GameRoom {
-  constructor(id) {
+  constructor(id, awid) {
     this._id = id;
+    this._awid = awid;
     this._players = [];
     this._star = new Star();
     this._state = "waiting";
-    this._time = -20;
+    this._time = -2;
     console.log("GameRoom created");
   }
 
@@ -117,7 +118,7 @@ class GameRoom {
       state: this._state,
       time: this._time,
       limit: TIME_LIMIT,
-    } 
+    }
   }
 
   start(skipPlayer) {
@@ -145,9 +146,10 @@ class GameRoom {
     this._state = "ended";
     clearInterval(this._gameTicker);
     this._informPlayers(this.getGameRoomInfo(), this._id, null, "gameTick");
-    Elo.UpdateAbl.update(this._players.map((p) => p.getPlayerInfo())).then((_result) => {
+    Elo.UpdateAbl.update(this._awid, { players: this._players.map((p) => p.getPlayerInfo())}).then((_result) => {
       this._state = "counted";
-      this._informPlayers(this.getGameRoomInfo(), this._id, null, "gameResult");
+      console.log("hereeee");
+      this._informPlayers(this.getGameRoomInfo(), this._id, null, "gameTick");
     });
   }
 

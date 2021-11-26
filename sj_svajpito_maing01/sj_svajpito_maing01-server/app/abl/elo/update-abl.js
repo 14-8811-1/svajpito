@@ -30,7 +30,7 @@ class UpdateAbl {
     );
 
     let players = dtoIn.players;
-    let exitingPlayers = await this.dao.list({ awid });
+    let exitingPlayers = await this.dao.list(awid);
 
     let elo = new EloRank(32);
     // let elo = new EloRank(32 / (players.length - 1));

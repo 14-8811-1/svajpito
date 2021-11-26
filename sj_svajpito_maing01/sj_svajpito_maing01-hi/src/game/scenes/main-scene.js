@@ -3,6 +3,7 @@ import * as UU5 from "uu5g04";
 import Player from "../entity/player";
 import Ground from "../entity/ground";
 import Enemy from "../entity/enemy";
+import { Uri } from "uu_appg01_core";
 import store, { UPDATE_SCORE } from "../store";
 // import Firefly from "../entity/firefly";
 import { onEvent, triggerEvent } from "../../common/communication-helper";
@@ -13,12 +14,12 @@ import Timer from "../overlay/timer";
 
 const AUDIO_FILES = {
   death: [
-    "assets/audio/death/death1.wav", 
+    "assets/audio/death/death1.wav",
     "assets/audio/death/death2.wav",
     "assets/audio/death/death3.mp3",
     "assets/audio/death/death4.mp3",
     "assets/audio/death/death5.mp3",
-],
+  ],
   jump: [
     "assets/audio/jump/jump1.wav",
     "assets/audio/jump/jump2.mp3",
@@ -48,7 +49,7 @@ export default class MainScene extends Phaser.Scene {
   }
   preload() {
     //PRELOAD SPRITES
-    this.load.image("woods", "./assets/backgrounds/woods.png");
+    this.load.image("bg", "./assets/backgrounds/bg.jpg");
     this.load.image("star", "assets/star_gold.png");
     this.load.image("orb", "assets/orb.png");
     this.load.spritesheet("newt", "assets/spriteSheets/newt.png", {
@@ -157,7 +158,9 @@ export default class MainScene extends Phaser.Scene {
       this.timer.setTime(this.gameRoom.time);
       console.log("initialGameState prepped", this.gameRoom);
       if (this.gameRoom.state === "counted") {
-        UU5.Environment.setRoute("score");
+        let url = Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString();
+        window.location.href = url;
+        // UU5.Environment.setRoute("score");
       }
     });
 
@@ -348,10 +351,11 @@ export default class MainScene extends Phaser.Scene {
     });
 
     //set up world bounds
-    this.physics.world.setBounds(0, 0, 800, 600);
+    this.physics.world.setBounds(0, 0, 1900, 1000);
 
     //background
-    this.add.image(-160, 0, "woods").setOrigin(0).setScale(0.5);
+    this.add.image(0, 0, "bg").setOrigin(0, 0);
+    //this.cameras.main.setBounds(0, 0, 600, 400);
 
     this.createAnimations();
 
@@ -361,13 +365,28 @@ export default class MainScene extends Phaser.Scene {
     //platforms
     this.groundGroup = this.physics.add.staticGroup({ classType: Ground });
 
-    this.groundGroup.create(160, 100, "ground");
-    this.groundGroup.create(250, 350, "ground");
-    this.groundGroup.create(530, 200, "ground");
-    this.groundGroup.create(600, 510, "ground");
+    this.groundGroup.create(90, 250, "ground");
+    this.groundGroup.create(430, 290, "ground");
+    this.groundGroup.create(1350, 310, "ground");
+
+    this.groundGroup.create(120, 490, "ground");
+    this.groundGroup.create(715, 460, "ground");
+    this.groundGroup.create(1100, 515, "ground");
+    this.groundGroup.create(1750, 450, "ground");
+
+    this.groundGroup.create(110, 800, "ground");
+    this.groundGroup.create(410, 610, "ground");
+    this.groundGroup.create(735, 680, "ground");
+    this.groundGroup.create(1200, 770, "ground");
+    this.groundGroup.create(1550, 600, "ground");
+
+    this.groundGroup.create(410, 880, "ground");
+    this.groundGroup.create(765, 870, "ground");
+    this.groundGroup.create(1400, 900, "ground");
+    this.groundGroup.create(1690, 820, "ground");
 
     //floor
-    this.groundGroup.create(160, 620, "mainGround");
+    this.groundGroup.create(160, 1020, "mainGround");
 
     //fireflies
     // this.fireflies = this.physics.add.group({ classType: Firefly });
@@ -405,6 +424,8 @@ export default class MainScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.groundGroup);
 
+    this.cameras.main.setBounds(0, 0, 1900, 1000);
+    this.cameras.main.startFollow(this.player);
     // set score from playerInfo
     this.score.update(playerInfo.score);
   }
@@ -431,6 +452,9 @@ export default class MainScene extends Phaser.Scene {
     //call player update
     if (this.player) {
       this.player.update(this.cursors, this.sounds.jump);
+    }
+    if (this.timer) {
+      this.timer.draw();
     }
     this.otherPlayers.getChildren().forEach((otherPlayer) => otherPlayer.update());
   }

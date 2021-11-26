@@ -63,18 +63,6 @@ const DetailView = createVisualComponent({
       },
       {
         cell: (cellProps) => {
-          if (cellProps.data.data.state) {
-            return <span> {cellProps.data.data.state} </span>;
-          } else {
-            return null;
-          }
-        },
-        header: <UU5.Bricks.Lsi lsi={Lsi.columns.state} />,
-        sorterKey: "state",
-        minWidth: "s",
-      },
-      {
-        cell: (cellProps) => {
           if (cellProps.data.data.id) {
             return (
               <UU5.Bricks.Link
