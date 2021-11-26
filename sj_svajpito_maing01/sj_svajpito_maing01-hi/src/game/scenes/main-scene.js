@@ -1,9 +1,9 @@
 import "phaser";
 import * as UU5 from "uu5g04";
+import { Uri } from "uu_appg01_core";
 import Player from "../entity/player";
 import Ground from "../entity/ground";
 import Enemy from "../entity/enemy";
-import { Uri } from "uu_appg01_core";
 import store, { UPDATE_SCORE } from "../store";
 // import Firefly from "../entity/firefly";
 import { onEvent, triggerEvent } from "../../common/communication-helper";
@@ -158,7 +158,10 @@ export default class MainScene extends Phaser.Scene {
       console.log("initialGameState prepped", this.gameRoom);
       if (this.gameRoom.state === "counted") {
         let url = Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString();
-        window.location.href = url;
+        // window.location.href = url;
+        window.location.assign(url);
+        // window.location.replace(url);
+        // window.location.reload();
         // UU5.Environment.setRoute("score");
       }
     });
@@ -300,7 +303,8 @@ export default class MainScene extends Phaser.Scene {
           }
           break;
         case "counted":
-          UU5.Environment.setRoute("score");
+          window.location.assign(Uri.UriBuilder.parse(window.location.href).setUseCase("score").toString());
+        // UU5.Environment.setRoute("score");
       }
     });
 

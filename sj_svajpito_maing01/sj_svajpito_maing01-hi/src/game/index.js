@@ -27,6 +27,7 @@ export const Game = UU5.Common.Component.memo(
     render(props) {
       //@@viewOn:hooks
       let config = useRef();
+      let gameObject = useRef();
 
       useEffect(() => {
         config.current = {
@@ -46,7 +47,12 @@ export const Game = UU5.Common.Component.memo(
           },
           scene: [MainScene, OpeningScene],
         };
-        new Phaser.Game(config.current);
+        gameObject.current = new Phaser.Game(config.current);
+
+        return () => {
+          gameObject.current.destroy(true, false);
+          // window.location.reload();
+        };
       }, []);
       //@@viewOff:hooks
 

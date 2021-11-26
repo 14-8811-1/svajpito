@@ -4,7 +4,7 @@ const Bullet = require("./bullet");
 const pickSpawnPoint = require("../helpers/spawner");
 const Elo = require("../abl/elo");
 
-const TIME_LIMIT = 5; // * 60;
+const TIME_LIMIT = 5;  //* 60;
 
 class GameRoom {
   constructor(id, awid) {
