@@ -5,7 +5,7 @@ const pickSpawnPoint = require("../helpers/spawner");
 const Elo = require("../abl/elo");
 
 const INITIAL_COUNTDOWN = 20;
-const TIME_LIMIT = 5 * 60;
+const TIME_LIMIT = 10 * 60;
 
 class GameRoom {
   constructor(id, awid) {
@@ -155,7 +155,6 @@ class GameRoom {
   }
 
   _reset() {
-    this._id = id;
     this._players = [];
     this._star = new Star();
     this._state = "waiting";
