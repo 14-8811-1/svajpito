@@ -110,7 +110,7 @@ class GameRoom {
       state: this._state,
       time: this._time,
       limit: TIME_LIMIT,
-    }
+    };
   }
 
   getGameRoomShortInfo() {
@@ -119,7 +119,7 @@ class GameRoom {
       state: this._state,
       time: this._time,
       limit: TIME_LIMIT,
-    }
+    };
   }
 
   start(skipPlayer) {
@@ -147,7 +147,7 @@ class GameRoom {
     this._state = "ended";
     clearInterval(this._gameTicker);
     this._informPlayers(this.getGameRoomInfo(), this._id, null, "gameTick");
-    Elo.UpdateAbl.update(this._awid, { players: this._players.map((p) => p.getPlayerInfo())}).then((_result) => {
+    Elo.UpdateAbl.update(this._awid, { players: this._players.map((p) => p.getPlayerInfo()) }).then((_result) => {
       this._state = "counted";
       this._informPlayers(this.getGameRoomInfo(), this._id, null, "gameTick");
       this._reset();

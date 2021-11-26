@@ -1,9 +1,10 @@
+const pickSpawnPoint = require("../helpers/spawner");
 
 class Star {
-
   constructor({ position = {} } = {}) {
-    this._x = position.x || Math.floor(Math.random() * 700) + 50;
-    this._y = position.y || Math.floor(Math.random() * 500) + 50;
+    let radomSpawn = pickSpawnPoint();
+    this._x = position.x || radomSpawn.x;
+    this._y = position.y || radomSpawn.y;
   }
 
   setPosition(x, y) {
@@ -14,17 +15,16 @@ class Star {
   getStarInfo() {
     return {
       x: this._x,
-      y: this._y
-    }
+      y: this._y,
+    };
   }
 
   getPosition() {
     return {
       x: this._x,
-      y: this._y
-    }
+      y: this._y,
+    };
   }
-
 }
 
 module.exports = Star;

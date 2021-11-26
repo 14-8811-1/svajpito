@@ -2,6 +2,7 @@
 
 const gameStorage = require("../../conponents/game-storage");
 const Errors = require("../../api/errors/game-error").Update;
+const pickSpawnPoint = require("../../helpers/spawner");
 const SCORE_LIMIT = 10;
 
 class UpdateAbl {
@@ -110,9 +111,8 @@ class UpdateAbl {
     // player.increaseScore(10);
 
     let star = gameRoom.getStar();
-    let x = Math.floor(Math.random() * 700) + 50;
-    let y = Math.floor(Math.random() * 500) + 50;
-    star.setPosition(x, y);
+    let newStarPosition = pickSpawnPoint();
+    star.setPosition(newStarPosition.x, newStarPosition.y);
 
     gameRoom.sendStarUpdate(player, gameRoom.getId(), "starLocation");
 
