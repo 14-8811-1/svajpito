@@ -4,7 +4,8 @@ const Bullet = require("./bullet");
 const pickSpawnPoint = require("../helpers/spawner");
 const Elo = require("../abl/elo");
 
-const TIME_LIMIT = 5; // * 60;
+const INITIAL_COUNTDOWN = 20;
+const TIME_LIMIT = 5 * 60;
 
 class GameRoom {
   constructor(id, awid) {
@@ -13,7 +14,7 @@ class GameRoom {
     this._players = [];
     this._star = new Star();
     this._state = "waiting";
-    this._time = -2;
+    this._time = -INITIAL_COUNTDOWN;
     console.log("GameRoom created");
   }
 
@@ -148,9 +149,18 @@ class GameRoom {
     this._informPlayers(this.getGameRoomInfo(), this._id, null, "gameTick");
     Elo.UpdateAbl.update(this._awid, { players: this._players.map((p) => p.getPlayerInfo())}).then((_result) => {
       this._state = "counted";
-      console.log("hereeee");
       this._informPlayers(this.getGameRoomInfo(), this._id, null, "gameTick");
+      this._reset();
     });
+  }
+
+  _reset() {
+    this._id = id;
+    this._players = [];
+    this._star = new Star();
+    this._state = "waiting";
+    this._time = -INITIAL_COUNTDOWN;
+    console.log("GameRoom reset");
   }
 
   _sendPlayerList(skipPlayer, gameId) {
