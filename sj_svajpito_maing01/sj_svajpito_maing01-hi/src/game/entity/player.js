@@ -158,8 +158,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(cursors) {
-    this.previousPosition = { x: this.x, y: this.y, velocityY: this.velocityY, velocityX: this.velocityX };cccccctbbbcgdivrkjfijdcueliuecjekhuglvkvijbr
-    
+    this.previousPosition = { x: this.x, y: this.y, velocityY: this.velocityY, velocityX: this.velocityX };
+
     if (this.isAlive) {
       this.updateMovement(cursors);
       this.updateJump(cursors);
